@@ -67,7 +67,7 @@ Keith and Zanello conjectured that for every prime $p$ there are infinitely many
 \badge{leangreen}{Proved in Lean 4} & The falsity of Conjecture~B and Theorem~\ref{thm:73} are proved in Lean~4 with Mathlib, with no hypothesis and only the standard axioms (\texttt{KeithZanello.conjectureB\_false}).\\
 \badge{compblue}{By computation} & Theorems~\ref{thm:97} and~\ref{thm:all}, at the other primes, rest on computation: for each prime, the program \texttt{kztree} writes a certificate, a list of checks that the repository reruns. To guard against a bug in \texttt{kztree}, a second program written separately in SageMath and PARI/GP redoes part of this work. At $p=73$ and $193$ it recomputes the whole certificate and agrees at every step; at $p=97$ it builds its own certificate, with other parameters, for the same set of exponents~$t$; at $p=337$ and $1033$ it redoes every step except the final search over the residues of~$t$ modulo powers of~$2$, which takes most of the running time. At the other $25$ primes the certificate was checked by \texttt{kztree} alone (Section~\ref{sec:checks}).\\
 \rowcolor{black!6}
-\multicolumn{2}{>{\raggedright\arraybackslash}p{0.93\textwidth}}{Lean proofs, code, certificates and the \TeX{} source: \href{\repo}{\texttt{github.com/mt0-svg/keith-zanello-73}}; archived with the outputs of every check at \href{https://doi.org/10.5281/zenodo.23014000}{doi:10.5281/zenodo.23014000}}\\
+\multicolumn{2}{>{\raggedright\arraybackslash}p{0.93\textwidth}}{Lean proofs, code, certificates, \TeX{} source: \href{\repo}{\texttt{github.com/mt0-svg/keith-zanello-73}}}\\
 \end{tabular}
 \end{center}
 
@@ -527,7 +527,7 @@ The file \texttt{README.md} of the repository lists every file with its role. Th
 
 \emph{Formalization.} The repository also contains a formalization in Lean~4 \cite{Lean}, on Mathlib \cite{Mathlib}, of Theorem~\ref{thm:73} and of the resulting failure of Conjecture~B, with no hypothesis. The statement, with the definitions it uses, is in \texttt{Challenge.lean}; the continuous integration of the repository builds the proof and runs Comparator \cite{Comp}, which checks that the proved theorems have exactly the statements of \texttt{Challenge.lean} and use only the axioms \texttt{propext}, \texttt{Classical.choice} and \texttt{Quot.sound}. The formal proof of Lemma~\ref{lem:sturm} does not use the eta quotient $H_t$ of level $576$: it works with modular forms of weight $2$ on $\Gamma_0(9)$ and trivial character, whose product $W$ is congruent to $\eta(24z)$ modulo $2$, and obtains the stronger bound $4t$. The Hecke operators $T_p$ on $M_k(\Gamma_0(N))$, the vanishing bound of Sturm for complex modular forms on $\Gamma_0(N)$ and four lemmas on the behaviour of the Eisenstein series $E_2$ at the cusps are ported from \cite{FLT}. Sturm's theorem modulo~$2$ on $\Gamma_0(9)$ and the congruence $W\equiv\eta(24z)$ modulo~$2$ are proved in the repository.
 
-\emph{Data availability.} The code, the certificate outputs and the formal proofs that support the findings of this paper are in the repository above, and archived, with the complete output of every check rerun for the release, at Zenodo, doi:\href{https://doi.org/10.5281/zenodo.23014000}{10.5281/zenodo.23014000}.
+\emph{Data availability.} The code, the certificate outputs and the formal proofs that support the findings of this paper are in the repository above. The release of each version adds the complete output of every check.
 
 \appendix
 \section{\texorpdfstring{The sets $\cE_p$}{The sets E\_p}}\label{app:sets}
