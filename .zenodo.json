@@ -7,7 +7,7 @@
       "name": "mt0-svg"
     }
   ],
-  "description": "<p>This is AI-generated research: the results, proofs and code were found and written by AI. Credit goes to all the humans whose work it builds on.</p><p>Keith and Zanello conjectured that for every prime p there are infinitely many odd t such that, for some base r, the coefficients of the t-th power of the product of 1 - q^n over all positive n are even on the p - 1 progressions p^2 n + kp + r with k from 1 to p - 1. We show that at p = 73 exactly twenty odd t have this property, the largest being t = 203, so the conjecture is false.</p><p>Proved in Lean 4 with Mathlib, with only the standard axioms: the falsity of Conjecture B and the result at p = 73 (Theorem 1 of the paper; KeithZanello.conjectureB_false, checked by Comparator). By computation: Theorems 2 and 3 of the paper (p = 97, and the thirty primes p &equiv; 1 (mod 24) below 2000), by certificates that the repository reruns, partly redone by a second program.</p><p>Files: the paper, the complete output of every check rerun for the release, and the repository at the release tag. Repository: <a href=\"https://github.com/mt0-svg/keith-zanello-73\">github.com/mt0-svg/keith-zanello-73</a></p>",
+  "description": "<p>This is AI-generated research: the results, proofs and code were found and written by AI. Credit goes to all the humans whose work it builds on.</p><p>Keith and Zanello (<a href=\"https://doi.org/10.1007/s00026-026-00833-x\">Ann. Comb. 2026</a>, Conjecture B) conjectured that for every prime $p$ there are infinitely many odd $t$ such that, for some base $r$, the coefficients $c_t(N)$ of $f_1^t = \\prod_{n\\ge1}(1-q^n)^t = \\sum_{N\\ge0} c_t(N)\\,q^N$ are even on the $p-1$ progressions $N = p^2 n + kp + r$, $1 \\le k \\le p-1$. We show that at $p = 73$ exactly twenty odd $t$ have this property, the largest being $t = 203$, so the conjecture is false.</p><p>Proved in Lean 4 with Mathlib, with only the standard axioms: the falsity of Conjecture B and the result at $p = 73$ (Theorem 1 of the paper; <code>KeithZanello.conjectureB_false</code>, checked by Comparator). By computation: Theorems 2 and 3 of the paper ($p = 97$, and the thirty primes $p \\equiv 1 \\pmod{24}$ below 2000), by certificates that the repository reruns, partly redone by a second program.</p><p>Repository: <a href=\"https://github.com/mt0-svg/keith-zanello-73\">github.com/mt0-svg/keith-zanello-73</a></p>",
   "license": "Apache-2.0",
   "keywords": [
     "Keith-Zanello conjecture",
@@ -26,6 +26,11 @@
   "related_identifiers": [
     {
       "relation": "references",
+      "identifier": "10.1007/s00026-026-00833-x",
+      "scheme": "doi"
+    },
+    {
+      "relation": "references",
       "identifier": "arXiv:2404.15716",
       "scheme": "arxiv"
     },
@@ -34,5 +39,23 @@
       "identifier": "https://github.com/mt0-svg/keith-zanello-73",
       "scheme": "url"
     }
+  ],
+  "references": [
+    "S. Charlton, L. Mauth and A. Medvedovsky, On the parity of coefficients of eta powers, preprint, arXiv:2411.17638 (2024).",
+    "Lean FRO, Comparator, commit d03acab, https://github.com/leanprover/comparator.",
+    "Anthropic, Fermat's Last Theorem in Lean 4, commit 6e837e7, https://github.com/anthropics/fermats-last-theorem.",
+    "B. Gordon and K. Hughes, Multiplicative properties of eta-products, II, in: A tribute to Emil Grosswald: number theory and related analysis, Contemp. Math. 143 (1993), 415-430.",
+    "W. J. Keith and F. Zanello, Parity of the coefficients of certain eta-quotients, J. Number Theory 235 (2022), 275-304; arXiv:2010.09881.",
+    "W. J. Keith and F. Zanello, Parity of the coefficients of certain eta-quotients, II: The case of even-regular partitions, J. Number Theory 251 (2023), 84-101.",
+    "W. J. Keith and F. Zanello, Parity of the coefficients of certain eta-quotients, III: two special classes, Ann. Comb. (2026), doi:10.1007/s00026-026-00833-x; arXiv:2404.15716.",
+    "L. de Moura and S. Ullrich, The Lean 4 theorem prover and programming language, in: Automated Deduction, CADE 28, Lecture Notes in Comput. Sci. 12699, Springer (2021), 625-635.",
+    "G. Ligozat, Courbes modulaires de genre 1, Mém. Soc. Math. France 43 (1975), 5-80.",
+    "The mathlib Community, The Lean mathematical library, in: CPP 2020, ACM (2020), 367-381, doi:10.1145/3372885.3373824.",
+    "M. Newman, Construction and application of a class of modular functions, II, Proc. London Math. Soc. (3) 9 (1959), 373-387.",
+    "J.-L. Nicolas and J.-P. Serre, Formes modulaires de niveau 1 en caractéristique 2 : l'ordre de nilpotence des opérateurs de Hecke, C. R. Math. Acad. Sci. Paris 350 (2012), 343-348.",
+    "J.-L. Nicolas and J.-P. Serre, Formes modulaires de niveau 1 en caractéristique 2 : structure de l'algèbre de Hecke, C. R. Math. Acad. Sci. Paris 350 (2012), 449-454.",
+    "The PARI Group, PARI/GP, version 2.17.4, Université de Bordeaux, https://pari.math.u-bordeaux.fr/.",
+    "The Sage Developers, SageMath, the Sage Mathematics Software System, version 10.9 (2026), https://www.sagemath.org.",
+    "J. Sturm, On the congruence of modular forms, in: Number theory (New York, 1984-1985), Lecture Notes in Math. 1240, Springer (1987), 275-280."
   ]
 }
