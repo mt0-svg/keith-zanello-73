@@ -13,7 +13,7 @@
 
 ## The result
 
-Keith and Zanello conjectured ([arXiv:2404.15716](https://arxiv.org/abs/2404.15716), Conjecture B) that for every prime $`p`$ there are infinitely many odd $`t`$ such that, for some base $`r`$, the coefficients $`c_t(N)`$ of
+Keith and Zanello conjectured ([Ann. Comb. 2026](https://doi.org/10.1007/s00026-026-00833-x); [arXiv:2404.15716](https://arxiv.org/abs/2404.15716), Conjecture B) that for every prime $`p`$ there are infinitely many odd $`t`$ such that, for some base $`r`$, the coefficients $`c_t(N)`$ of
 
 ```math
 f_1^t = \prod_{n\ge1} (1-q^n)^t = \sum_{N\ge0} c_t(N)\, q^N
