@@ -1,0 +1,38 @@
+p=1993 kstart=22 mu=3000 list=ker_eta_p1993_b14.txt good=1,3,5,7,9,11,13,15,17,19,21,23,27,33,39,45,49,53,67,71,99,111,129,193,197,259
+# kztree p=1993 kstart=22 maxdepth=30 kappa=3986 mu=3000 good=[1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 27, 33, 39, 45, 49, 53, 67, 71, 99, 111, 129, 193, 197, 259]
+step1 sturm t=5 T_p G_t = 0 up to m <= 288: true
+step1 sturm t=7 T_p G_t = 0 up to m <= 384: true
+step1 sturm t=9 T_p G_t = 0 up to m <= 480: true
+step1 sturm t=11 T_p G_t = 0 up to m <= 576: true
+step1 sturm t=13 T_p G_t = 0 up to m <= 672: true
+step1 sturm t=15 T_p G_t = 0 up to m <= 768: true
+step1 sturm t=17 T_p G_t = 0 up to m <= 864: true
+step1 sturm t=19 T_p G_t = 0 up to m <= 960: true
+step1 sturm t=21 T_p G_t = 0 up to m <= 1056: true
+step1 sturm t=23 T_p G_t = 0 up to m <= 1152: true
+step1 sturm t=27 T_p G_t = 0 up to m <= 1344: true
+step1 sturm t=33 T_p G_t = 0 up to m <= 1632: true
+step1 sturm t=39 T_p G_t = 0 up to m <= 1920: true
+step1 sturm t=45 T_p G_t = 0 up to m <= 2208: true
+step1 sturm t=49 T_p G_t = 0 up to m <= 2400: true
+step1 sturm t=53 T_p G_t = 0 up to m <= 2592: true
+step1 sturm t=67 T_p G_t = 0 up to m <= 3264: true
+step1 sturm t=71 T_p G_t = 0 up to m <= 3456: true
+step1 sturm t=99 T_p G_t = 0 up to m <= 4800: true
+step1 sturm t=111 T_p G_t = 0 up to m <= 5376: true
+step1 sturm t=129 T_p G_t = 0 up to m <= 6240: true
+step1 sturm t=193 T_p G_t = 0 up to m <= 9312: true
+step1 sturm t=197 T_p G_t = 0 up to m <= 9504: true
+step1 sturm t=259 T_p G_t = 0 up to m <= 12480: true
+sparse tau=1: 996 values of e mod p, reduced failures 0, full checks 0
+step2 sparse tau=1 K0=15 Mmin=122 failures(e,w)=0 [] [0.5 s]
+sparse tau=3: 996 values of e mod p, reduced failures 0, full checks 0
+step2 sparse tau=3 K0=13 Mmin=485 failures(e,w)=0 [] [1.0 s]
+step3 level 22: [167.7 s] nodes 2097152, closed 2096421, lemma2 0, sparse 640, split 91 [16385, 2113537, 1064961, 3162113, 540673, 1589249, 278529, 802817, 147457, 2768897, 606209, 1654785, 475137, 999425, 3096577, 49153, 2146305, 1097729, 3194881, 573441, 2670593, 1622017, 311297, 2408449, 835585, 2736129, 1687553, 376833, 3522561, 245761, 8193, 2105345, 1056769, 3153921, 24577, 2121729, 1073153, 3170305, 1597441, 4097]
+step3 level 23: [196.7 s] nodes 182, closed 158, lemma2 15, sparse 0, split 9 [53, 67, 71, 99, 111, 129, 193, 197, 259]
+step3 level 24: [205.0 s] nodes 18, closed 9, lemma2 4, sparse 0, split 5 [111, 129, 193, 197, 259]
+step3 level 25: [217.6 s] nodes 10, closed 5, lemma2 4, sparse 0, split 1 [259]
+step3 level 26: [221.8 s] nodes 2, closed 1, lemma2 1, sparse 0, split 0 []
+lemma2 centers (t, level): [(5, 23), (7, 23), (9, 23), (11, 23), (13, 23), (15, 23), (17, 23), (19, 23), (21, 23), (23, 23), (27, 23), (33, 23), (39, 23), (45, 23), (49, 23), (53, 24), (67, 24), (71, 24), (99, 24), (111, 25), (129, 25), (193, 25), (197, 25), (259, 26)]
+VERDICT: PASS (good odd 2-adic integers = the listed ones)
+time 221.77 s, maxrss 225792 KB

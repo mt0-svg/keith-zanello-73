@@ -1,0 +1,7 @@
+  ***   Warning: new maximum stack size = 2000003072 (1907.352 Mbytes).
+  *** _^s: Warning: increasing stack size to 16000000.
+  *** _^s: Warning: increasing stack size to 32000000.
+  *** _^s: Warning: increasing stack size to 64000000.
+(a) mismatches of the divisor formula for N < 200000: 0
+(b) odd coefficients in the progressions of base -5/24, p = 1 mod 24: [[73, 0], [97, 0], [193, 0], [241, 0], [313, 0], [337, 0], [409, 0], [433, 0], [457, 0], [577, 0], [601, 0], [673, 0], [769, 0], [937, 0], [1009, 0]]
+    control, p = 5 mod 24: [[5, 262], [29, 130], [53, 98], [101, 72], [149, 59], [173, 55]]

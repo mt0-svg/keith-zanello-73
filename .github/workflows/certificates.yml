@@ -1,0 +1,100 @@
+name: Certificates
+
+# Rerun the computations of the paper and compare with the recorded outputs: kztree at the thirty primes,
+# the PARI/GP checks, and the checks of code/impl2/ that finish within about 20 minutes.
+on:
+  push:
+    branches: ["**"]
+    paths: ["code/**", "paper/check.sh", "paper/small_checks.gp", ".github/workflows/certificates.yml"]
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  kztree:
+    runs-on: ubuntu-latest
+    container:
+      image: rust:1.98.1
+    strategy:
+      fail-fast: false
+      matrix:
+        p: [73, 97, 193, 241, 313, 337, 409, 433, 457, 577, 601, 673, 769, 937, 1009,
+            1033, 1129, 1153, 1201, 1249, 1297, 1321, 1489, 1609, 1657, 1753, 1777, 1801, 1873, 1993]
+    steps:
+      - uses: actions/checkout@v5
+      - name: Rerun and compare with code/impl1/out/tree_p${{ matrix.p }}.txt
+        run: |
+          mkdir -p verify/versions
+          rustc --version > verify/versions/rust.txt
+          KZ_SAVE="$PWD/verify" sh paper/check.sh ${{ matrix.p }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: verify-kztree-p${{ matrix.p }}
+          path: verify/
+
+  gp:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq pari-gp
+      - name: Small checks of the paper, and the t = 5 proposition compared with the recorded output
+        run: |
+          mkdir -p verify/gp verify/results verify/versions
+          echo 'print("PARI/GP ", version())' | gp -q > verify/versions/gp.txt
+          ok=1
+          s=$(date +%s)
+          if (cd paper && gp -q -D colors=no small_checks.gp < /dev/null) > verify/gp/small_checks.txt 2>&1; then r=PASS; else r=FAIL; ok=0; fi
+          printf 'gp small_checks\tgp -q small_checks.gp (in paper)\t%s s\t%s\tgp/small_checks.txt\n' $(($(date +%s) - s)) "$r" > verify/results/gp_small_checks.tsv
+          s=$(date +%s)
+          (cd code/gp && gp -q -D colors=no t5_check.gp < /dev/null) > verify/gp/t5_check.txt 2>&1 || true
+          grep -v "Warning:" code/gp/t5_check.out > /tmp/t5_rec.txt; grep -v "Warning:" verify/gp/t5_check.txt > /tmp/t5_new.txt
+          if diff /tmp/t5_rec.txt /tmp/t5_new.txt; then r="PASS, identical to code/gp/t5_check.out (stack warnings ignored)"; else r="FAIL, different from code/gp/t5_check.out"; ok=0; fi
+          printf 'gp t5_check\tgp -q t5_check.gp (in code/gp)\t%s s\t%s\tgp/t5_check.txt\n' $(($(date +%s) - s)) "$r" > verify/results/gp_t5_check.tsv
+          cat verify/gp/small_checks.txt verify/results/*.tsv
+          [ $ok = 1 ]
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: verify-gp
+          path: verify/
+
+  impl2:
+    runs-on: ubuntu-latest
+    container:
+      image: sagemath/sagemath:10.9
+      options: --user root
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - id: quick
+            checks: engine_check sturm_p73 search_p73_h3 sparse_p73 lemma_sanity_p73 sparse_direct_p73 leftovers_p73 sturm_p97 sturm_p193 sturm_p337 certificate_p337
+          - id: certificate_p73
+            checks: certificate_p73 brute_p73
+          - id: brute_p73_range_a
+            checks: brute_p73_range_a
+          - id: brute_p73_range_b
+            checks: brute_p73_range_b
+          - id: spot_p73
+            checks: spot_p73
+          - id: sparse_p97
+            checks: sparse_p97
+          - id: search_p97
+            checks: search_p97
+    steps:
+      - uses: actions/checkout@v5
+      - name: PARI/GP
+        run: apt-get update -qq && DEBIAN_FRONTEND=noninteractive apt-get install -y -qq pari-gp
+      - name: Rerun and compare with the recorded outputs
+        run: |
+          mkdir -p verify/versions
+          { sage --version; sage -c 'print("PARI in Sage", pari.version())'; echo 'print("PARI/GP ", version())' | gp -q; } > verify/versions/sage.txt
+          IMPL2_SAVE="$PWD/verify" sh code/impl2/rerun.sh ${{ matrix.checks }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: verify-impl2-${{ matrix.id }}
+          path: verify/

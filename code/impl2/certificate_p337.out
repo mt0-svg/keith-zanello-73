@@ -1,0 +1,5 @@
+p = 337, kstart = 17, 33 listed t
+(a) kappa = 674, mu = 3000: K0 = {1: 13, 3: 12}, Mmin = {1: 14, 3: 28}
+(b) tau = 1: 168 classes with two small exponents distinct mod p^2, |<2> mod p| = 21, odd w mod 2^12: 2048, reduced failures 0, min #M per w 72
+(b) tau = 3: 168 classes with two small exponents distinct mod p^2, |<2> mod p| = 21, odd w mod 2^12: 2048, reduced failures 0, min #M per w 70
+NEW PARAMETERS (a, b only): PASS

@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+message: "If you use this work, please cite it as below."
+type: software
+title: "Conjecture B of Keith and Zanello on the parity of eta-powers is false"
+authors:
+  - name: mt0-svg
+repository-code: "https://github.com/mt0-svg/keith-zanello-73"
+license: Apache-2.0
+version: v1.0
+doi: 10.5281/zenodo.23014000
+keywords:
+  - Keith-Zanello conjecture
+  - eta-power
+  - parity
+  - modular form modulo 2
+  - Lean 4
+  - formal verification
+preferred-citation:
+  type: article
+  title: "Conjecture B of Keith and Zanello on the parity of eta-powers is false"
+  authors:
+    - name: mt0-svg
+  doi: 10.5281/zenodo.23014000
+  url: "https://github.com/mt0-svg/keith-zanello-73"

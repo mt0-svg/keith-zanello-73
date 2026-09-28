@@ -1,0 +1,621 @@
+\documentclass[12pt]{amsart}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\input{glyphtounicode}
+\pdfgentounicode=1
+\usepackage{amsmath,amssymb}
+\usepackage[table]{xcolor}
+\usepackage{array}
+\usepackage[margin=1in]{geometry}
+\usepackage{url}
+\usepackage{listings}
+\usepackage[pdfauthor={311859884+mt0-svg@users.noreply.github.com},
+            pdftitle={Conjecture B of Keith and Zanello on the parity of eta-powers is false},
+            pdfkeywords={Keith-Zanello conjecture, eta-power, parity, modular form modulo 2, Sturm bound, Lean 4, formal verification},
+            bookmarksnumbered=true]{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue, citecolor=blue, urlcolor=blue}
+\newcommand{\repo}{https://github.com/mt0-svg/keith-zanello-73}
+% robust, so that amsart does not uppercase the address in the author line
+\DeclareRobustCommand{\authorlink}{\href{\repo/issues/new/choose}{\nolinkurl{311859884+mt0-svg@users.noreply.github.com}}}
+
+\renewcommand{\baselinestretch}{1.3}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem*{conjB}{Conjecture B}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{question}[theorem]{Question}
+
+\newcommand{\F}{\mathbb{F}_2}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Zt}{\mathbb{Z}_2}
+\newcommand{\cE}{\mathcal{E}}
+\newcommand{\B}{B}
+\newcommand{\coef}[2]{[q^{#1}]\,#2}
+% Lean counterpart of a numbered statement: \leanref[note]{declaration}{file}.
+\newcommand{\leanref}[3][]{\par\smallskip{\raggedright\noindent\textit{Lean:} \path{#2} in \path{#3}#1.\par}\smallskip}
+\newcommand{\nolean}[1]{\par\smallskip{\raggedright\noindent\textit{Lean:} not formalized#1.\par}\smallskip}
+\lstset{language={},basicstyle=\linespread{1}\ttfamily\footnotesize,columns=fullflexible,keepspaces=true,
+  breaklines=true,breakindent=2em,frame=none,xleftmargin=1em}
+
+\begin{document}
+
+\title[Conjecture B of Keith and Zanello is false]{Conjecture B of Keith and Zanello on the parity of eta-powers is false}
+\author{\authorlink}
+\thanks{2020 {\em Mathematics Subject Classification.} Primary: 11P83; Secondary: 05A17, 11P82, 11P84, 11F33.\\\indent
+{\em Key words and phrases.} Eta-power; parity; arithmetic progression; modular form modulo 2; Sturm bound; binary digits.}
+
+\begin{abstract}
+Keith and Zanello conjectured that for every prime $p$ there are infinitely many odd $t$ such that, for some base $r$, the coefficients of the $t$-th power of the product of $1-q^n$ over all positive $n$ are even on the $p-1$ progressions $p^2n+kp+r$ with $k$ from 1 to $p-1$. They proved this for every odd prime $p$ not congruent to 1 modulo 24. We show that at $p=73$ exactly twenty odd $t$ have this property, the largest being $t=203$, so the conjecture is false. The proof combines a Sturm bound with a finite certificate on the binary digits of $t$. The same computation gives a finite set at each of the thirty primes $p$ congruent to 1 modulo 24 below 2000.
+\end{abstract}
+
+\maketitle
+
+\definecolor{leangreen}{RGB}{0,122,61}
+\definecolor{compblue}{RGB}{0,84,166}
+\newcommand{\badge}[2]{\colorbox{#1}{\strut\textcolor{white}{\sffamily\bfseries\small #2}}}
+\begin{center}
+\small
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{>{\raggedright\arraybackslash}p{0.2\textwidth} >{\raggedright\arraybackslash}p{0.7\textwidth}}
+\rowcolor{black!6}
+\multicolumn{2}{>{\raggedright\arraybackslash}p{0.93\textwidth}}{\textit{This is AI-generated research: the results, proofs and code were found and written by AI. Credit goes to all the humans whose work it builds on.}}\\
+\badge{leangreen}{Proved in Lean 4} & The falsity of Conjecture~B and Theorem~\ref{thm:73} are proved in Lean~4 with Mathlib, with no hypothesis and only the standard axioms (\texttt{KeithZanello.conjectureB\_false}).\\
+\badge{compblue}{By computation} & Theorems~\ref{thm:97} and~\ref{thm:all}, at the other primes, rest on computation: for each prime, the program \texttt{kztree} writes a certificate, a list of checks that the repository reruns. To guard against a bug in \texttt{kztree}, a second program written separately in SageMath and PARI/GP redoes part of this work. At $p=73$ and $193$ it recomputes the whole certificate and agrees at every step; at $p=97$ it builds its own certificate, with other parameters, for the same set of exponents~$t$; at $p=337$ and $1033$ it redoes every step except the final search over the residues of~$t$ modulo powers of~$2$, which takes most of the running time. At the other $25$ primes the certificate was checked by \texttt{kztree} alone (Section~\ref{sec:checks}).\\
+\rowcolor{black!6}
+\multicolumn{2}{>{\raggedright\arraybackslash}p{0.93\textwidth}}{Lean proofs, code, certificates and the \TeX{} source: \href{\repo}{\texttt{github.com/mt0-svg/keith-zanello-73}}; archived with the outputs of every check at \href{https://doi.org/10.5281/zenodo.23014000}{doi:10.5281/zenodo.23014000}}\\
+\end{tabular}
+\end{center}
+
+\clearpage
+\section{Introduction}\label{sec:intro}
+
+We show that Conjecture~B of Keith and Zanello \cite{KZ3} fails at the prime $p=73$. The conjecture concerns the parity of the coefficients of the eta-powers $f_1^t$ on arithmetic progressions modulo $p^2$, the subject of the third paper of their series on the parity of eta-quotients \cite{KZ1,KZ2,KZ3}. It predicts that for every prime $p$, infinitely many odd $t$ have a full set of such progressions with even coefficients. At $p=73$ exactly twenty odd $t$ have one, the largest being $t=203$.
+
+We use the notation of \cite{KZ3}. For a positive integer $t$ put $f_t:=\prod_{i\ge1}(1-q^{it})$ and write
+\[
+f_1^t=\sum_{n\ge0}c_t(n)q^n .
+\]
+For power series $f$ and $g$ with integer coefficients, $f\equiv g$ means that corresponding coefficients are congruent modulo~2, and we identify such a series with its image in $\F[[q]]$. For coprime integers $y$ and $a$, we write $y_a^{-1}$ for the inverse of $y$ modulo $a$. The following definition is \cite[Definition~17]{KZ3}.
+\begin{quote}
+We say that $f_1^t$ is \emph{$p^2$-even} at a prime $p$ with base $r\in\{0,\dots,p^2-1\}$ if $c_t(p^2n+kp+r)\equiv0$ for all $k\in\{1,\dots,p-1\}$. We will denote this more compactly by saying that $f_1^t$ is \emph{$(p,r)$-even}.
+\end{quote}
+Here $n$ runs over the nonnegative integers (Remark~\ref{rem:reading} treats the other reading). As in \cite[Theorem~19 and Question~41]{KZ3}, we say that $f_1^t$ is $p^2$-even when it is $(p,r)$-even for some base $r$, and we put
+\[
+\cE_p:=\{t\ge1\ \text{odd} : f_1^t \text{ is } p^2\text{-even}\}.
+\]
+
+\begin{conjB}[{Keith and Zanello \cite[Conjecture~B]{KZ3}}]
+For any given prime $p$, there exist infinitely many $t\ge1$ odd such that $f_1^t$ is $(p,r)$-even, for some base $r$ depending on $t$ and $p$.
+\end{conjB}
+\leanref[; its negation is \path{KeithZanello.conjectureB_false} in \path{KZ73/Modular/Final.lean}]{KeithZanello.ConjectureB}{KZ73/Statement.lean}
+
+The conjecture appears with the same content in the first arXiv version of \cite{KZ3} (April 2024). Keith and Zanello prove it for every prime $p\ge3$ with $p\not\equiv1\pmod{24}$ \cite[Corollary~21]{KZ3}. They take $t=a+b\cdot2^e$ with $a,b\in\{1,3\}$ and $e>0$, so that $f_1^t\equiv f_1^a\cdot f_{2^e}^b$ is a product of two lacunary series, and they prove that $f_1^t$ is $(p,r)$-even for some base $r$ when $-2^e$ (if $a=b$) or $-3\cdot2^e$ (if $a\ne b$) is a quadratic nonresidue modulo $p$ \cite[Theorem~19]{KZ3}; their Theorem~20 makes the prime classes and the bases explicit. When $p\equiv1\pmod{24}$, the numbers $-1$, $2$ and $3$ are quadratic residues modulo $p$, so this argument gives nothing, and Keith and Zanello write that these primes ``certainly bear investigation'' \cite[Section~5]{KZ3}. For the first of them, $p=73$, they report that numerical calculations suggest that $f_1^5$ is $73^2$-even with base $1110$ \cite[Remark~35]{KZ3}, and that several $t$ appear to be $73^2$-even, from $t=5$ with base $1110$ to $t=69$ with base $4660$ \cite[Section~5]{KZ3}.
+
+For a prime $p\ge5$ and an odd $t$, let $r_t\in\{0,\dots,p^2-1\}$ be the residue of $-t\cdot24_{p^2}^{-1}$. Since $p^2\equiv1\pmod{24}$, we have $r_t\equiv t(p^2-1)/24\pmod{p^2}$. The progressions of base $r_t$ consist of indices $N$ for which $p$ divides $24N+t$ exactly once (Lemma~\ref{lem:rt}).
+
+\begin{theorem}\label{thm:73}
+Let $t\ge1$ be odd. Then $f_1^t$ is $73^2$-even if and only if
+\[
+t\in\cE_{73}=\{1,3,5,7,9,11,13,15,17,19,21,23,51,55,59,61,65,69,199,203\}.
+\]
+For each $t\in\cE_{73}$, the series $f_1^t$ is $(73,r_t)$-even with $r_t\equiv222\,t\pmod{5329}$, and for $t\ge5$ this is its only base.
+\end{theorem}
+\leanref[; the statement is \path{KeithZanello.Theorem1} in \path{KZ73/Statement.lean}]{KeithZanello.theorem1}{KZ73/Modular/Final.lean}
+
+For $t=5$ and $t=69$ the base $r_t$ is $1110$ and $4660$, the two bases recorded in \cite{KZ3}. In particular, Conjecture~B is false. Theorem~\ref{thm:73} concerns the prime 73 only; Conjecture~A of \cite{KZ3}, which fixes $t$ and lets $p$ vary, is not affected. The bases $r_5$ and $r_{69}$, and the identities $24\cdot222=73^2-1$, $24\cdot392=97^2-1$ and $24\cdot1110+5=5\cdot73^2$ used below, are recomputed in PARI/GP \cite{PARI} by the lines
+\lstinputlisting[linerange=12-14]{small_checks.gp}
+of the file \texttt{small\_checks.gp} (Section~\ref{sec:data}), which print
+\begin{lstlisting}
+r_5, r_69 at 73: 1110, 4660   24*222 = 5328, 24*392 = 9408
+24*1110 + 5 = 26645 = 5*73^2: 1
+\end{lstlisting}
+
+The smallest odd $t$ outside $\cE_{73}$ is $t=25$, and the reason it fails can be checked in a fraction of a second. For each residue class $\rho$ modulo 73, at least two indices $N$ with $5329\le N\le6762$ and $N\equiv\rho\pmod{73}$ have $c_{25}(N)$ odd. Two such indices differ modulo $5329$, since both lie in $[73^2,2\cdot73^2)$, and by Lemma~\ref{lem:pairs} they exclude every base $r\equiv\rho\pmod{73}$. The lines
+\lstinputlisting[linerange=7-9]{small_checks.gp}
+of \texttt{small\_checks.gp} print
+\begin{lstlisting}
+t=25, p=73: min #odd per class, N in [5329,6762]: 2  (bound 6761: 1)
+\end{lstlisting}
+so every class holds two odd coefficients, and the bound $6762$ cannot be lowered. On the side of the good exponents, $24\cdot1110+5=5\cdot73^2$, and Proposition~\ref{prop:t5} below proves that $f_1^5$ is $(p,r_5)$-even at every prime $p\equiv1\pmod{24}$.
+
+The method applies at other primes $p\equiv1\pmod{24}$.
+
+\begin{theorem}\label{thm:97}
+Let $t\ge1$ be odd. Then $f_1^t$ is $97^2$-even if and only if $t$ is an odd integer between $1$ and $23$ or
+\[
+t\in\{25,29,31,35,37,41,43,47,57,63,103,107,115,119,121,133,391\}.
+\]
+For each such $t$, the series $f_1^t$ is $(97,r_t)$-even with $r_t\equiv392\,t\pmod{9409}$, and for $t\ge5$ this is its only base.
+\end{theorem}
+\nolean{; verified by computation (Section~\ref{sec:proof})}
+
+\begin{theorem}\label{thm:all}
+Let $p<2000$ be a prime with $p\equiv1\pmod{24}$. Then $\cE_p$ is the finite set given in Table~\ref{tab:sets}; it contains every odd $t\le23$, and its size and largest element are given in Table~\ref{tab:primes}. For each $t\in\cE_p$, the series $f_1^t$ is $(p,r_t)$-even, and for $t\ge5$ this is its only base.
+\end{theorem}
+\nolean{; verified by computation (Section~\ref{sec:comp})}
+
+Combined with \cite[Corollary~21]{KZ3}, Theorem~\ref{thm:all} shows that for odd primes $p<2000$, Conjecture~B holds exactly when $p\not\equiv1\pmod{24}$.
+For the first three odd exponents there is a proof valid at every prime $p\equiv1\pmod{24}$ at once: for $t=1$ and $t=3$ it is Lemma~\ref{lem:t13}, and for $t=5$ it is the following statement.
+
+\begin{proposition}\label{prop:t5}
+Let $p\ge7$ be a prime with $p\not\equiv5\pmod{24}$. Then $c_5(N)$ is even for every $N\ge0$ such that $p$ divides $24N+5$ exactly once. In particular, $f_1^5$ is $(p,r_5)$-even, and $\{1,3,5\}\subseteq\cE_p$ for every prime $p\equiv1\pmod{24}$.
+\end{proposition}
+\nolean{; the formal proof of Theorem~\ref{thm:73} obtains the case $p=73$, $t=5$ from Lemma~\ref{lem:sturm}}
+
+For $p\equiv3\pmod4$, Keith and Zanello proved that $f_1^5$ is $p^2$-even \cite[Theorem~19 with $a=b=1$, $e=2$]{KZ3}; the proof below treats these primes and the classes $p\equiv1$, $13$, $17\pmod{24}$ together. At $p=73$, Proposition~\ref{prop:t5} confirms the observation of \cite[Remark~35]{KZ3}. The hypothesis $p\not\equiv5\pmod{24}$ cannot be dropped: at $p=29$ we have $r_5=175$, and $c_5(204)=-125$ is odd although $204=29+r_5$. With the function \texttt{rt} of the previous check, the lines
+\lstinputlisting[linerange=17-18]{small_checks.gp}
+print
+\begin{lstlisting}
+c_5(204) = -125, r_5 mod 29^2 = 175, 24*204+5 = [13, 2; 29, 1]
+\end{lstlisting}
+so $24\cdot204+5=13^2\cdot29$, and $29$ divides it exactly once.
+
+The proof of Theorem~\ref{thm:73} has two parts. Each $t\in\cE_{73}$ is shown to be good by a Sturm bound for a modular form of weight $(t+1)/2$ and level $576$ that is congruent to $\eta(24z)^t$ modulo~2 (Section~\ref{sec:good}). For the other odd $t$ we use that $f_1^t$ is congruent to the product of the series $f_{2^i}$ over the binary digits $2^i$ of $t$ \cite[Section~1.2]{KZ3}, so that its coefficients below $q^{2^h}$ depend only on $t$ modulo $2^h$. A search over residue classes of $t$ modulo powers of~2 then settles every odd $t$ by one of three lemmas (Section~\ref{sec:bad}): a class is settled when finitely many explicit odd coefficients exclude every base for all of its members; a class around a member of $\cE_{73}$ is settled except for its centre; and the classes around $1$ and $3$, which contain the exponents $1+2^Kw$ and $3+2^Kw$ for all large $K$, are settled uniformly in $K$ by an analysis of pentagonal and triangular numbers that depends on $K$ only through $2^K$ modulo $p^2$. No structure theory is needed: badness is certified by explicit odd coefficients and goodness by one Sturm bound per good exponent. At $p=73$ the search partitions the odd $2$-adic integers into $8206$ settled classes, and the whole computation takes less than a tenth of a second.
+
+The search at each prime, with the checks it relies on, forms a certificate, computed by a Rust program. A second program, written separately in SageMath and PARI/GP, recomputes the whole certificate at $p=73$ and $p=193$, builds its own certificate, with other parameters, for the same set of exponents at $p=97$, and at $p=337$ and $p=1033$ redoes every step except the final search; at the other $25$ primes the certificate was checked by the Rust program alone (Section~\ref{sec:checks}).
+
+Section~\ref{sec:digits} introduces the binary digit reduction and the pair certificates. Section~\ref{sec:good} proves goodness, including Proposition~\ref{prop:t5}. Section~\ref{sec:bad} gives the three lemmas and assembles them into a certificate. Section~\ref{sec:proof} proves Theorems~\ref{thm:73} and~\ref{thm:97}, and Section~\ref{sec:comp} reports the computations behind Theorem~\ref{thm:all} and the independent checks. Section~\ref{sec:remarks} lists open questions, Section~\ref{sec:data} describes the code, the certificates and the Lean formalization, and Appendix~\ref{app:sets} lists the sets $\cE_p$.
+
+Throughout, $p$ denotes a prime with $p\ge5$, so that $p^2\equiv1\pmod{24}$.
+
+\section{Binary digits and pair certificates}\label{sec:digits}
+
+This section reduces badness to the existence of explicit odd coefficients and shows that these coefficients depend only on the binary digits of the exponent.
+
+Let $\Zt$ be the ring of $2$-adic integers. Each $T\in\Zt$ has a unique expansion $T=\sum_{i\ge0}\varepsilon_i2^i$ with $\varepsilon_i\in\{0,1\}$. Since $f_{2^i}\equiv1\pmod{q^{2^i}}$, the product
+\[
+F_T:=\prod_{i\ge0}f_{2^i}^{\varepsilon_i}\in\F[[q]]
+\]
+converges $q$-adically. If $T=t$ is a nonnegative integer, then $F_t\equiv f_1^t$, because $f_1^{2^i}\equiv f_{2^i}$ \cite[Section~1.2]{KZ3}. We write $\coef{N}{F}$ for the coefficient of $q^N$ in $F$.
+
+\begin{lemma}\label{lem:digits}
+Let $h\ge1$ and let $T,T'\in\Zt$ with $T\equiv T'\pmod{2^h}$. Then $F_T\equiv F_{T'}\pmod{q^{2^h}}$.
+\end{lemma}
+\leanref[, for natural numbers $T$ and $T'$]{KeithZanello.coeff_fbar_pow_mod}{KZ73/Series.lean}
+
+\begin{proof}
+The digits $\varepsilon_i$ with $i<h$ of $T$ and $T'$ agree, and every factor $f_{2^i}$ with $i\ge h$ is congruent to $1$ modulo $q^{2^h}$.
+\end{proof}
+
+\begin{definition}\label{def:pair}
+Let $F\in\F[[q]]$ and let $\rho$ be a residue class modulo $p$. A \emph{pair for $F$ in the class $\rho$} consists of two indices $N_1,N_2\ge p^2$ with $N_1\equiv N_2\equiv\rho\pmod p$ and $N_1\not\equiv N_2\pmod{p^2}$, such that $\coef{N_1}{F}=\coef{N_2}{F}=1$. We say that $F$ is \emph{$p$-closed} if it has a pair in every class modulo $p$.
+\end{definition}
+\leanref[, at $p=73$, with \path{KeithZanello.HasPair} and \path{KeithZanello.Closed} for the last notion]{KeithZanello.IsPair}{KZ73/Pairs.lean}
+
+\begin{lemma}\label{lem:pairs}
+Let $t\ge1$ and let $\rho$ be a residue class modulo $p$. If $f_1^t$ has a pair in the class $\rho$, then $f_1^t$ is $(p,r)$-even for no base $r\equiv\rho\pmod p$. In particular, if $f_1^t$ is $p$-closed, then $f_1^t$ is not $p^2$-even.
+\end{lemma}
+\leanref[, at $p=73$; the second assertion is \path{KeithZanello.not_isP2Even_of_closed}]{KeithZanello.not_evenWithBase_of_hasPair}{KZ73/Pairs.lean}
+
+\begin{proof}
+Let $r\in\{0,\dots,p^2-1\}$ with $r\equiv\rho\pmod p$, and let $N_1,N_2$ be a pair in the class $\rho$. Since $N_1\not\equiv N_2\pmod{p^2}$, one of them, say $N$, satisfies $N\not\equiv r\pmod{p^2}$. As $N\ge p^2>r$ and $N\equiv r\pmod p$, we have $N-r=pm$ with $m\ge1$ and $p\nmid m$. Write $m=pn+k$ with $n\ge0$ and $1\le k\le p-1$. Then $N=p^2n+kp+r$ and $c_t(N)$ is odd, so $f_1^t$ is not $(p,r)$-even.
+\end{proof}
+
+\begin{remark}\label{rem:reading}
+If $n$ is allowed to run over all integers in the definition, with $c_t(N)=0$ for $N<0$, then $(p,r)$-evenness asks that $c_t(N)$ be even for every $N\ge0$ with $N\equiv r\pmod p$ and $N\not\equiv r\pmod{p^2}$, which is a stronger condition. All results of this paper hold under both readings: the pairs of Lemma~\ref{lem:pairs} exclude a base under the weaker reading, hence under the stronger one, and the goodness statements of Section~\ref{sec:good} give $c_t(N)\equiv0$ at every such $N$.
+\end{remark}
+\nolean{ (the Lean definition \path{IsEvenWithBase} takes $n\ge0$)}
+
+\section{Good exponents}\label{sec:good}
+
+This section proves that $f_1^t$ is $(p,r_t)$-even for each $t$ in the sets of Theorems~\ref{thm:73}, \ref{thm:97} and~\ref{thm:all}, and proves Proposition~\ref{prop:t5}.
+
+\begin{lemma}\label{lem:rt}
+Let $t$ be odd and $N\ge0$. Then $N\equiv r_t\pmod p$ and $N\not\equiv r_t\pmod{p^2}$ if and only if $p$ divides $24N+t$ exactly once. Consequently, if $c_t(N)$ is even for every $N\ge0$ such that $p$ divides $24N+t$ exactly once, then $f_1^t$ is $(p,r_t)$-even.
+\end{lemma}
+\leanref[, at $p=73$; the consequence is \path{KeithZanello.evenWithBase_rt_of_condG}]{KeithZanello.index_iff}{KZ73/Pairs.lean}
+
+\begin{proof}
+Since $24r_t\equiv-t\pmod{p^2}$, we have $24N+t\equiv24(N-r_t)\pmod{p^2}$, and $24$ is prime to $p$. So $p$ divides $24N+t$ if and only if $p$ divides $N-r_t$, and $p^2$ divides $24N+t$ if and only if $p^2$ divides $N-r_t$. The indices $p^2n+kp+r_t$ with $1\le k\le p-1$ are congruent to $r_t$ modulo $p$ and not modulo $p^2$.
+\end{proof}
+
+\begin{lemma}\label{lem:t13}
+For every prime $p\ge5$, the coefficient $c_1(N)$ is even whenever $p$ divides $24N+1$ exactly once, and $c_3(N)$ is even whenever $p$ divides $24N+3$ exactly once. In particular, $1$ and $3$ belong to $\cE_p$.
+\end{lemma}
+\leanref[ and \path{KeithZanello.condG_three} in the same file, at $p=73$; Jacobi's identity modulo~2 is \path{KeithZanello.jacobi_mod_two} in \path{KZ73/Jacobi.lean}]{KeithZanello.condG_one}{KZ73/Main.lean}
+
+\begin{proof}
+By Euler's pentagonal number theorem and Jacobi's identity \cite[Theorem~27]{KZ3}, $f_1\equiv\sum_{i\in\Z}q^{i(3i-1)/2}$ and $f_1^3\equiv\sum_{i\ge0}q^{i(i+1)/2}$. Since $24\cdot i(3i-1)/2+1=(6i-1)^2$ and $8\cdot i(i+1)/2+1=(2i+1)^2$, an odd $c_1(N)$ forces $24N+1$ to be a square, and an odd $c_3(N)$ forces $24N+3$ to be three times a square. A prime that divides a square divides it at least twice, and so does a prime $p\ne3$ that divides three times a square. Lemma~\ref{lem:rt} gives the last assertion.
+\end{proof}
+
+The case $m=p^2$ of \cite[Theorems~15 and~16]{KZ3} also gives Lemma~\ref{lem:t13}. For larger $t$ we use a modular form. Put
+\[
+A_t(z):=\eta(24z)^t=q^tf_{24}^t=\sum_{n\ge0}c_t(n)q^{24n+t},
+\]
+and let $a_t(m)$ be the coefficient of $q^m$ in $A_t$, so that $a_t(m)=c_t((m-t)/24)$ if $m\equiv t\pmod{24}$ and $m\ge t$, and $a_t(m)=0$ otherwise. We set $a_t(m/p)=0$ when $p\nmid m$.
+
+\begin{lemma}\label{lem:sturm}
+Let $t\ge1$ be odd. Suppose that $a_t(pm)+a_t(m/p)$ is even for $1\le m\le48(t+1)$. Then it is even for every $m\ge1$. Consequently $c_t(N)$ is even for every $N\ge0$ such that $p$ divides $24N+t$ exactly once, and $f_1^t$ is $(p,r_t)$-even.
+\end{lemma}
+\leanref[, through \path{KeithZanello.Modular.sturm_level_nine}, which works at level~9 with the bound $4t$ (Section~\ref{sec:data}); the consequence is \path{KeithZanello.condG_of_hecke} in \path{KZ73/Main.lean}, at $p=73$, and the finite check of the hypothesis at $p=73$ is \path{KeithZanello.sturmTest_all} in \path{KZ73/SturmCheck.lean}]{KeithZanello.sturmHypothesis_proved}{KZ73/Modular/Final.lean}
+
+\begin{proof}
+Let $H_t(z):=\eta(z)^2\eta(24z)^t/\eta(2z)$. With the exponents $r_1=2$, $r_2=-1$ and $r_{24}=t$ at $\delta=1$, $2$ and $24$, we have $\sum_\delta\delta r_\delta=24t$ and $\sum_\delta(576/\delta)r_\delta=1152-288+24t=24(36+t)$, both divisible by $24$. By the theorem of Gordon and Hughes \cite{GH} and Newman \cite{New}, in the form of \cite[Theorem~20]{KZ1}, $H_t$ transforms like a modular form of weight $(t+1)/2$ on $\Gamma_0(576)$ with character $\chi(d)=\bigl(\frac{(-1)^{(t+1)/2}s}{d}\bigr)$, where $s=2^{-1}\cdot24^t=2^{3t-1}3^t$. Since $3t-1$ is even, $\chi(d)=\bigl(\frac{(-1)^{(t+1)/2}\cdot3}{d}\bigr)$, a quadratic character. By Ligozat's formula \cite{Lig}, in the form of \cite[Theorem~23]{KZ1}, the order of $H_t$ at a cusp $c/d$ with $d\mid576$ is a positive rational multiple of
+\[
+2-\frac{\gcd(d,2)^2}{2}+\frac{t\gcd(d,24)^2}{24}\ \ge\ \frac{t}{24}>0 .
+\]
+Hence $H_t$ is a holomorphic modular form in $M_{(t+1)/2}(\Gamma_0(576),\chi)$, with integer coefficients. Since $\eta(z)^2/\eta(2z)=f_1^2/f_2\equiv1$, we have $H_t\equiv A_t$.
+
+As $p\nmid576$, the Hecke operator $T_p$ maps $M_{(t+1)/2}(\Gamma_0(576),\chi)$ into itself and sends $\sum b(m)q^m$ to $\sum\bigl(b(pm)+\chi(p)p^{(t-1)/2}b(m/p)\bigr)q^m$ \cite[Section~3.1]{KZ1}. Since $\chi(p)=\pm1$ and $p$ is odd, the coefficient of $q^m$ in $T_pH_t$ is congruent to $a_t(pm)+a_t(m/p)$ modulo~2, and its constant term is $0$ because $H_t$ has none. By Sturm's theorem \cite{Sturm}, in the form of \cite[Theorem~22]{KZ1} applied to $T_pH_t$ and the zero form with the same character, $T_pH_t\equiv0$ follows from the vanishing modulo~2 of its coefficients up to
+\[
+\frac{t+1}{2}\cdot\frac{576}{12}\Bigl(1+\frac12\Bigr)\Bigl(1+\frac13\Bigr)=48(t+1),
+\]
+which is the hypothesis. So $a_t(pm)\equiv a_t(m/p)$ for every $m\ge1$, and for $p\nmid m$ this reads $a_t(pm)\equiv0$. If $p$ divides $24N+t$ exactly once, then $m=(24N+t)/p$ is prime to $p$ and $a_t(pm)=c_t(N)$, so $c_t(N)$ is even. Lemma~\ref{lem:rt} completes the proof.
+\end{proof}
+
+\begin{proof}[Proof of Proposition~\ref{prop:t5}]
+Since $f_1^4\equiv f_4$, we have $f_1^5\equiv f_1f_4$, and by Euler's theorem \cite[Theorem~27]{KZ3}, $c_5(N)$ is congruent modulo~2 to the number of pairs $(i,i')\in\Z^2$ with $i(3i-1)/2+4\,i'(3i'-1)/2=N$. Put $m=24N+5$. As $24\cdot i(3i-1)/2+1=(6i-1)^2$ and $i\mapsto6i-1$ is a bijection from $\Z$ onto the integers congruent to $-1$ modulo $6$, the number $c_5(N)$ is congruent to the number of solutions of $x^2+4y^2=m$ with $x\equiv y\equiv-1\pmod6$.
+
+Every integer solution of $x^2+4y^2=m$ has $x$ and $y$ prime to $6$. Indeed $m$ is odd, so $x$ is odd; then $m\equiv5\pmod8$ forces $4y^2\equiv4\pmod8$, so $y$ is odd; and $m\equiv2\pmod3$ excludes $3\mid y$ (which would give $x^2\equiv2\pmod3$), after which $x^2\equiv m-4y^2\equiv1\pmod3$. In particular $x$ and $y$ are nonzero, and each solution with $x,y>0$ has exactly one choice of signs $(\pm x,\pm y)$ with both entries congruent to $-1$ modulo $6$. Hence $c_5(N)\equiv R(m)/4$, where $R(m)$ is the number of integer solutions of $x^2+4y^2=m$. For odd $m$ every representation $m=u^2+v^2$ has exactly one even entry, so $R(m)$ is half the number $r_2(m)=4\sum_{d\mid m}\chi_{-4}(d)$ of representations of $m$ as a sum of two squares, where $\chi_{-4}$ is the nontrivial character modulo $4$. Therefore
+\[
+c_5(N)\equiv\tfrac12S(m)\pmod2,\qquad S(m):=\sum_{d\mid m}\chi_{-4}(d).
+\]
+The function $S$ is multiplicative, and its value at a prime power $\ell^e$ is $1+\chi_{-4}(\ell)+\dots+\chi_{-4}(\ell)^e$. Suppose that $p$ divides $m$ exactly once and write $m=pm'$.
+
+If $p\equiv3\pmod4$, the factor at $p$ is $1-1=0$, so $S(m)=0$ and $c_5(N)$ is even.
+
+If $p\equiv1\pmod4$, the factor at $p$ is $2$, so $c_5(N)\equiv S(m')\pmod2$. The factor of $S(m')$ at $\ell^e$ is $e+1$ if $\ell\equiv1\pmod4$, and $1$ or $0$ according as $e$ is even or odd if $\ell\equiv3\pmod4$. Hence $S(m')$ is odd if and only if $m'$ is a square. Since $m'$ is prime to $6$, a square $m'$ would satisfy $m'\equiv1\pmod{24}$, hence $5\equiv m=pm'\equiv p\pmod{24}$, which is excluded. So $c_5(N)$ is even.
+
+Lemma~\ref{lem:rt} gives the $(p,r_5)$-evenness, and Lemma~\ref{lem:t13} gives $1,3\in\cE_p$.
+\end{proof}
+
+The file \texttt{code/gp/t5\_check.gp} tests the congruence $c_5(N)\equiv\frac12S(24N+5)$ and the conclusion of Proposition~\ref{prop:t5} on the coefficients $c_5(N)$ with $N<200000$, computed exactly over $\Z$, at the primes $p\equiv1\pmod{24}$ up to $1009$, and, as a control, at the primes $p\equiv5\pmod{24}$ up to $173$. It runs in about a second:
+\lstinputlisting[linerange=5-12]{../code/gp/t5_check.gp}
+It prints
+\begin{lstlisting}
+(a) mismatches of the divisor formula for N < 200000: 0
+(b) odd coefficients in the progressions of base -5/24, p = 1 mod 24: [[73, 0], [97, 0], [193, 0], [241, 0], [313, 0], [337, 0], [409, 0], [433, 0], [457, 0], [577, 0], [601, 0], [673, 0], [769, 0], [937, 0], [1009, 0]]
+    control, p = 5 mod 24: [[5, 262], [29, 130], [53, 98], [101, 72], [149, 59], [173, 55]]
+\end{lstlisting}
+
+\section{Bad exponents: three ways to settle a class}\label{sec:bad}
+
+This section gives three criteria showing that $F_T$ is $p$-closed for every $T$ in a residue class of $\Zt$, with at most one explicit exception, and assembles them into a certificate for the equality $\cE_p=\cE$ with a given finite set $\cE$.
+
+For $h\ge1$ and an odd integer $0<\tau<2^h$ let $\B(\tau,h):=\{T\in\Zt : T\equiv\tau\pmod{2^h}\}$. For each $h$, the odd elements of $\Zt$ are the disjoint union of the balls $\B(\tau,h)$ with $\tau$ odd and $0<\tau<2^h$, and $\B(\tau,h)=\B(\tau,h+1)\cup\B(\tau+2^h,h+1)$. For a positive odd integer $w$ we write $c_w(M)$ for the coefficient of $q^M$ in $f_1^w$, as before; for $w\in\Zt$ odd we put $c_w(M):=\coef{M}{F_w}$, which by Lemma~\ref{lem:digits} equals $c_{w'}(M)$ whenever $2^j>M$ and $w'$ is the positive residue of $w$ modulo $2^j$.
+
+\begin{lemma}[Closed classes]\label{lem:closed}
+If $F_\tau$ has a pair in every class modulo $p$ with both indices below $2^h$, then $F_T$ is $p$-closed for every $T\in\B(\tau,h)$.
+\end{lemma}
+\leanref[, closed case, at $p=73$, through \path{KeithZanello.rep_of_mod}]{KeithZanello.goodClass_of_leafTest}{KZ73/Tree.lean}
+
+\begin{proof}
+By Lemma~\ref{lem:digits}, $F_T$ and $F_\tau$ have the same coefficients below $q^{2^h}$.
+\end{proof}
+
+\begin{lemma}[A class with one good centre]\label{lem:centre}
+Let $t\ge1$ be odd, let $h$ satisfy $t<2^h$, and let $\rho_t$ be the class of $r_t$ modulo $p$. Assume:
+\begin{enumerate}
+\item[(G)] $c_t(N)$ is even for every $N\ge0$ such that $p$ divides $24N+t$ exactly once;
+\item[(i)] for every class $\rho\ne\rho_t$, the series $f_1^t$ has a pair in the class $\rho$ with both indices below $2^h$;
+\item[(ii)] $c_t(N_a)$ is odd for some $N_a$ with $p^2\le N_a<2^h$ and $N_a\equiv\rho_t\pmod p$.
+\end{enumerate}
+Then $F_T$ is $p$-closed for every $T\in\B(t,h)$ with $T\ne t$, and $r_t$ is the only base $r$ for which $f_1^t$ is $(p,r)$-even.
+\end{lemma}
+\leanref[, at $p=73$; the uniqueness of the base is \path{KeithZanello.base_eq_of_centre}]{KeithZanello.closed_of_centre}{KZ73/Pairs.lean}
+
+\begin{proof}
+By (G) and Lemma~\ref{lem:rt}, $f_1^t$ is $(p,r_t)$-even, and $N_a\equiv r_t\pmod{p^2}$, since otherwise $p$ would divide $24N_a+t$ exactly once and $c_t(N_a)$ would be even. Let $r$ be a base for which $f_1^t$ is $(p,r)$-even. By (i) and Lemma~\ref{lem:pairs}, $r\equiv\rho_t\pmod p$. If $r\not\equiv N_a\pmod{p^2}$, the argument of Lemma~\ref{lem:pairs} applied to the single index $N_a$ (which satisfies $N_a\ge p^2>r$ and $N_a\equiv r\pmod p$) shows that $r$ is not a base. Hence $r\equiv N_a\equiv r_t\pmod{p^2}$, that is, $r=r_t$.
+
+Now let $T\in\B(t,h)$ with $T\ne t$, and let $K\ge h$ be the $2$-adic valuation of $T-t$. Since $t<2^h\le2^K$, the binary digits of $t$ lie below $K$, and $T$ has the digits of $t$ below $K$ and the digit $1$ at $K$. Hence $F_T=F_t\cdot f_{2^K}\cdot\prod_{i>K}f_{2^i}^{\varepsilon_i}$. Modulo $q^{2^{K+1}}$ the last product is $1$ and $f_{2^K}\equiv1+q^{2^K}$, because $f_1\equiv1+q\pmod{q^2}$. Therefore
+\[
+\coef{N}{F_T}=c_t(N)+c_t(N-2^K)\qquad(N<2^{K+1}),
+\]
+where $c_t(N-2^K)=0$ for $N<2^K$. For a class $\rho\ne\rho_t$, the pair given by (i) has indices below $2^h\le2^K$, so it is a pair for $F_T$. For the class $\rho_t$, first $\coef{N_a}{F_T}=c_t(N_a)=1$, as $N_a<2^K$. Next, the class $\rho'$ of $\rho_t-2^K$ modulo $p$ differs from $\rho_t$ because $p$ is odd, and by (i) it contains a pair $N_1',N_2'$ with $N_1',N_2'<2^h$. As $N_1'\not\equiv N_2'\pmod{p^2}$, at least one of $N_1'+2^K$ and $N_2'+2^K$, call it $N_b=N'+2^K$, satisfies $N_b\not\equiv r_t\pmod{p^2}$. Then $N_b\equiv\rho_t\pmod p$, so $p$ divides $24N_b+t$ exactly once by Lemma~\ref{lem:rt}, and $c_t(N_b)$ is even by (G). Since $2^K\le N_b<2^{K+1}$, we get $\coef{N_b}{F_T}=c_t(N_b)+c_t(N')=0+1=1$. Finally $N_a,N_b\ge p^2$ and $N_a\equiv r_t\not\equiv N_b\pmod{p^2}$, so $N_a,N_b$ is a pair for $F_T$ in the class $\rho_t$.
+\end{proof}
+
+For the classes around $1$ and $3$ we need the exponents of the theta series. For $i\in\Z$ let $P_i:=i(3i-1)/2$ (the generalized pentagonal numbers), and for $i\ge0$ let $Q_i:=i(i+1)/2$ (the triangular numbers). The $P_i$ are pairwise distinct, as are the $Q_i$.
+
+\begin{lemma}[Special indices]\label{lem:special}
+Let $K\ge1$, $\kappa\ge0$ and $\mu\ge0$ be integers.
+\begin{enumerate}
+\item[(a)] Put $L:=\lceil(2^{K+1}-3\kappa-1)/3\rceil$ and suppose that $L\ge1$ and $(3L^2-L)/2>2^K\mu+(3\kappa^2+\kappa)/2$. Let $|i_0|\le\kappa$ and $0\le M\le\mu$. Then the only $i\in\Z$ with $P_i\le2^KM+P_{i_0}$ and $P_i\equiv P_{i_0}\pmod{2^K}$ is $i=i_0$.
+\item[(b)] Put $L':=2^{K+1}-\kappa-1$ and suppose that $L'\ge1$ and $L'(L'+1)/2>2^K\mu+\kappa(\kappa+1)/2$. Let $0\le i_0\le\kappa$ and $0\le M\le\mu$. Then the only $i\ge0$ with $Q_i\le2^KM+Q_{i_0}$ and $Q_i\equiv Q_{i_0}\pmod{2^K}$ is $i=i_0$.
+\end{enumerate}
+\end{lemma}
+\leanref[ for part~(a) and \path{KeithZanello.special_tri} for part~(b), with $\kappa=146$ and $\mu=3000$]{KeithZanello.special_pent}{KZ73/Sparse.lean}
+
+\begin{proof}
+(a) Let $i\ne i_0$ with $P_i\equiv P_{i_0}\pmod{2^K}$. Then $2^{K+1}$ divides $2(P_i-P_{i_0})=(i-i_0)(3i+3i_0-1)$. The two factors add up to $4i+2i_0-1$, which is odd, so exactly one of them is even, and that one is divisible by $2^{K+1}$. If it is $i-i_0\ne0$, then $|i|\ge2^{K+1}-\kappa\ge(2^{K+1}-3\kappa-1)/3$. If it is $3i+3i_0-1$, which is nonzero because it is congruent to $2$ modulo $3$, then $3|i|\ge2^{K+1}-|3i_0-1|\ge2^{K+1}-3\kappa-1$. In both cases $|i|\ge L$, since $|i|$ is an integer. The function $y\mapsto(3y^2-y)/2$ increases for $y\ge1/6$, so
+\[
+P_i=\frac{3i^2-i}{2}\ge\frac{3|i|^2-|i|}{2}\ge\frac{3L^2-L}{2}>2^K\mu+\frac{3\kappa^2+\kappa}{2}\ge2^KM+P_{i_0},
+\]
+where the last step uses $P_{i_0}\le\kappa(3\kappa+1)/2$ for $|i_0|\le\kappa$.
+
+(b) Let $i\ne i_0$ with $Q_i\equiv Q_{i_0}\pmod{2^K}$. Then $2^{K+1}$ divides $2(Q_i-Q_{i_0})=(i-i_0)(i+i_0+1)$, whose factors add up to the odd number $2i+1$, so one of them is divisible by $2^{K+1}$. If it is $i-i_0$, then $i<i_0$ is impossible because $i\ge0$ and $i_0\le\kappa<2^{K+1}$ (as $L'\ge1$), so $i\ge i_0+2^{K+1}\ge L'$. If it is $i+i_0+1>0$, then $i\ge2^{K+1}-\kappa-1=L'$. In both cases $Q_i\ge L'(L'+1)/2>2^K\mu+\kappa(\kappa+1)/2\ge2^KM+Q_{i_0}$.
+\end{proof}
+
+\begin{lemma}[The classes around $1$ and $3$]\label{lem:sparse}
+Let $\tau\in\{1,3\}$, and let $\kappa\ge0$, $\mu\ge1$ and $K_0\ge2$ be integers such that the hypothesis of Lemma~\ref{lem:special}(a) (if $\tau=1$) or~(b) (if $\tau=3$) holds for every $K\ge K_0$. Let $S_1$ be the set of residues modulo $p^2$ of the $P_i$ with $|i|\le\kappa$, and $S_3$ that of the $Q_i$ with $0\le i\le\kappa$. Let $j$ satisfy $\mu<2^j$, and put $M_{\min}:=\lceil p^2/2^{K_0}\rceil$. Assume:
+\begin{enumerate}
+\item[(S)] for every $e$ in the subgroup of $(\Z/p^2\Z)^\times$ generated by $2$ and every odd $w\in\{1,\dots,2^j-1\}$, the set
+\[
+R(e,w):=\{eM+s : M_{\min}\le M\le\mu,\ c_w(M)\ \text{odd},\ s\in S_\tau\}\subseteq\Z/p^2\Z
+\]
+contains, in every class modulo $p$, at least two elements.
+\end{enumerate}
+Then $F_T$ is $p$-closed for every $T\in\B(\tau,K_0)$ with $T\ne\tau$.
+\end{lemma}
+\leanref[ for $\tau=1$ and $K_0=13$, and \path{KeithZanello.closed_of_sparse3} for $\tau=3$ and $K_0'=11$, at $p=73$]{KeithZanello.closed_of_sparse1}{KZ73/Sparse.lean}
+
+\begin{proof}
+Let $T\in\B(\tau,K_0)$ with $T\ne\tau$, and let $K\ge K_0$ be the $2$-adic valuation of $T-\tau$, so that $T=\tau+2^Kw$ with $w\in\Zt$ odd. If $\tau=1$, the digit of $T$ at position $0$ is $1$, its digits at positions $1,\dots,K-1$ are $0$, and from position $K$ on its digits are those of $w$; since $f_{2^{K+i}}(q)=f_{2^i}(q^{2^K})$, this gives $F_T=f_1\cdot F_w(q^{2^K})$. If $\tau=3$, then $K\ge2$ and in the same way $F_T=f_1f_2F_w(q^{2^K})\equiv f_1^3F_w(q^{2^K})$. By \cite[Theorem~27]{KZ3}, $f_1\equiv\sum_{i\in\Z}q^{P_i}$ and $f_1^3\equiv\sum_{i\ge0}q^{Q_i}$. So for $\tau=1$ and every $N$,
+\[
+\coef{N}{F_T}=\sum_{i:\ P_i\le N,\ P_i\equiv N\ (2^K)}c_w\bigl((N-P_i)/2^K\bigr),
+\]
+and for $\tau=3$ the same formula holds with the $Q_i$, $i\ge0$, in place of the $P_i$. If $N=2^KM+P_{i_0}$ with $|i_0|\le\kappa$ and $0\le M\le\mu$ (respectively $N=2^KM+Q_{i_0}$ with $0\le i_0\le\kappa$), Lemma~\ref{lem:special} leaves only the term $i=i_0$, and $\coef{N}{F_T}=c_w(M)=c_{w'}(M)$, where $w'\in\{1,\dots,2^j-1\}$ is the residue of $w$ modulo $2^j$.
+
+Let $e$ be the residue of $2^K$ modulo $p^2$ and let $\rho$ be a class modulo $p$. By (S) there are two distinct elements $eM+s$ and $eM'+s'$ of $R(e,w')$ in the class $\rho$. Choose indices $i_0,i_0'$ in the ranges above whose pentagonal (respectively triangular) numbers $\tilde s,\tilde s'$ reduce to $s,s'$, and put $N=2^KM+\tilde s$ and $N'=2^KM'+\tilde s'$. Then $N\equiv eM+s$ and $N'\equiv eM'+s'$ modulo $p^2$, so $N\equiv N'\equiv\rho\pmod p$ and $N\not\equiv N'\pmod{p^2}$; both coefficients $\coef{N}{F_T}=c_{w'}(M)$ and $\coef{N'}{F_T}=c_{w'}(M')$ are odd; and $N,N'\ge2^KM_{\min}\ge2^{K_0}M_{\min}\ge p^2$. So $N,N'$ is a pair for $F_T$ in the class $\rho$.
+\end{proof}
+
+\begin{remark}\label{rem:check}
+Two finite tests make Lemma~\ref{lem:sparse} usable.
+
+(1) The size condition for every $K\ge K_0$. Put $X=2^K$. For $\tau=1$ we have $L\ge y:=(2X-3\kappa-1)/3$ and $(3y^2-y)/2=(2X-a)(2X-a-1)/6$ with $a=3\kappa+1$; so the hypothesis of Lemma~\ref{lem:special}(a) holds when $2X-a\ge1$ and
+\[
+h_1(X):=(2X-a)(2X-a-1)-6\mu X-3(3\kappa^2+\kappa)>0 .
+\]
+For $\tau=3$ we have $L'=2X-\kappa-1$ exactly, and the hypothesis of Lemma~\ref{lem:special}(b) is $L'\ge1$ and
+\[
+h_3(X):=(2X-\kappa-1)(2X-\kappa)-2\mu X-\kappa(\kappa+1)>0 .
+\]
+Both $h_\tau$ are quadratic polynomials with leading coefficient $4$, so if $h_\tau(X_0)>0$ and $h_\tau'(X_0)>0$, then $h_\tau(X)>0$ for all $X\ge X_0$. We take for $K_0$ the least $K$ such that $h_\tau(2^K)$ and $h_\tau'(2^K)$ are positive and $2^{K+1}-a\ge1$ (respectively $L'\ge1$). This is an exact integer test.
+
+(2) A sufficient form of (S) that depends on $e$ only modulo $p$. Call a class $c$ modulo $p$ \emph{double} if it contains two distinct elements of $S_\tau$. If $c_w(M)$ is odd, then for each double class $c$ the class $eM+c$ modulo $p$ contains two elements of $R(e,w)$. So (S) holds for $(e,w)$ if the classes $eM+c$ cover $\Z/p\Z$, where $M$ runs over the integers in $[M_{\min},\mu]$ with $c_w(M)$ odd and $c$ over the double classes. This test involves $e$ only through its residue modulo $p$, so it is run for the powers of $2$ modulo $p$ (there are $9$ of them at $p=73$) instead of the powers of $2$ modulo $p^2$ (there are $657$).
+\end{remark}
+\leanref[ and \path{KeithZanello.condS3}, which check condition~(S) by the test of part~(2) at $p=73$; part~(1) has no separate counterpart, since \path{KeithZanello.special_pent} and \path{KeithZanello.special_tri} in \path{KZ73/Sparse.lean} are proved for $K\ge13$ and $K\ge11$ directly]{KeithZanello.condS1}{KZ73/SparseCheck.lean}
+
+We can now state the certificate. Fix integers $\kappa\ge0$ and $\mu\ge1$, and let $K_0\ge2$ and $K_0'\ge2$ be integers such that the hypothesis of Lemma~\ref{lem:special}(a) holds for every $K\ge K_0$ and that of Lemma~\ref{lem:special}(b) for every $K\ge K_0'$, for instance the values given by Remark~\ref{rem:check}(1).
+
+\begin{proposition}\label{prop:cert}
+Let $\cE$ be a finite set of positive odd integers containing $1$ and $3$, such that condition (G) of Lemma~\ref{lem:centre} holds for every $t\in\cE$ with $t\ge5$. Assume that condition (S) of Lemma~\ref{lem:sparse} holds for $\tau=1$ with $K_0$ and for $\tau=3$ with $K_0'$. Let $\mathcal{P}$ be a finite set of balls $\B(\tau,h)$ that partitions the odd elements of $\Zt$, such that each ball in $\mathcal{P}$ is of one of the following types:
+\begin{enumerate}
+\item[(closed)] $F_\tau$ has a pair in every class modulo $p$ with both indices below $2^h$;
+\item[(centre)] $\tau$ is an element of $\cE$ with $\tau\ge5$, and conditions (i) and (ii) of Lemma~\ref{lem:centre} hold for $t=\tau$ at level $h$;
+\item[(sparse)] $h\ge K_0$ and $\tau\equiv1\pmod{2^{K_0}}$, or $h\ge K_0'$ and $\tau\equiv3\pmod{2^{K_0'}}$.
+\end{enumerate}
+Then $\cE_p=\cE$. Moreover $f_1^t$ is $(p,r_t)$-even for every $t\in\cE$, and $r_t$ is its only base for every $t\in\cE$ that is the centre of a ball of type (centre).
+\end{proposition}
+\leanref[, at $p=73$; it gives Theorem~\ref{thm:73} through \path{KeithZanello.mainClaimG} in \path{KZ73/Main.lean}]{KeithZanello.closed_of_not_mem_E73}{KZ73/TreeCert.lean}
+
+\begin{proof}
+For $t\in\cE$, the series $f_1^t$ is $(p,r_t)$-even by Lemma~\ref{lem:t13} if $t\le3$, and by (G) and Lemma~\ref{lem:rt} if $t\ge5$. Let $t$ be a positive odd integer not in $\cE$, and let $\B(\tau,h)\in\mathcal{P}$ be the ball containing $t$. If the ball is of type (closed), $f_1^t\equiv F_t$ is $p$-closed by Lemma~\ref{lem:closed}. If it is of type (centre), then $t\ne\tau$ because $\tau\in\cE$, and $F_t$ is $p$-closed by Lemma~\ref{lem:centre}. If it is of type (sparse), say with $\tau\equiv1\pmod{2^{K_0}}$, then $t\in\B(1,K_0)$ and $t\ne1$, so $F_t$ is $p$-closed by Lemma~\ref{lem:sparse}; the case $\tau\equiv3\pmod{2^{K_0'}}$ is the same with $\B(3,K_0')$. In every case $f_1^t$ is not $p^2$-even by Lemma~\ref{lem:pairs}. The statement on bases is Lemma~\ref{lem:centre}.
+\end{proof}
+
+The set $\mathcal{P}$ is found by a search. Start from the $2^{h_0-1}$ balls $\B(\tau,h_0)$ with $\tau$ odd; classify each ball as (closed), (centre) or (sparse) if possible; replace each remaining ball $\B(\tau,h)$ by $\B(\tau,h+1)$ and $\B(\tau+2^h,h+1)$; repeat until no ball remains. The search terminates only if $\cE$ contains every element of $\cE_p$: a ball containing a good exponent that is not in $\cE$ is never classified. So a successful search also certifies that the input list $\cE$ is complete.
+
+\section{Proof of Theorems~\ref{thm:73} and~\ref{thm:97}}\label{sec:proof}
+
+This section verifies the hypotheses of Proposition~\ref{prop:cert} at $p=73$ and $p=97$. All computations of this section were done with the program \texttt{kztree} described in Section~\ref{sec:comp}, on two threads of an AMD Ryzen 9 5900X; each run takes less than a second.
+
+\subsection*{Theorem~\ref{thm:73}, step 1: condition (G)}
+Let $\cE=\cE_{73}$ be the set of Theorem~\ref{thm:73}. For each of its $18$ elements $t\ge5$ we verified the hypothesis of Lemma~\ref{lem:sturm} at $p=73$: the number $a_t(73m)+a_t(m/73)$ is even for $1\le m\le48(t+1)$. The modular form behind this test is $H_t=\eta(z)^2\eta(24z)^t/\eta(2z)$, of weight $(t+1)/2$ between $3$ and $102$, on $\Gamma_0(576)$ with the quadratic character $\bigl(\frac{(-1)^{(t+1)/2}\cdot3}{\cdot}\bigr)$, and the Sturm bound $48(t+1)$ ranges from $288$ (for $t=5$) to $9792$ (for $t=203$). The test uses the parities of $c_t(N)$ for $N\le(73\cdot48(t+1)-t)/24$, that is, up to $N=29775$ for $t=203$. By Lemma~\ref{lem:sturm}, condition (G) holds for these $18$ values. The Sturm bound and the largest index, here and at $p=97$ below, are recomputed by
+\lstinputlisting[linerange=26-27]{small_checks.gp}
+which prints
+\begin{lstlisting}
+index of Gamma_0(576) = 1152;  (t+1)/2 * 1152/12 = 48(t+1)
+max N in step 1: p=73 (t=203): 29775, p=97 (t=391): 76031
+\end{lstlisting}
+
+\subsection*{Theorem~\ref{thm:73}, step 2: the partition}
+We take $\kappa=146$ and $\mu=3000$, so $j=12$. For $\tau=1$ we have $a=439$ and $h_1(X)=4X^2-19758X+878$; the test of Remark~\ref{rem:check}(1) fails at $X=2^{12}$ and holds at $X=2^{13}$, where $h_1(2^{13})=106578798$, so $K_0=13$. For $\tau=3$ we have $h_3(X)=4X^2-6586X$, and the test gives $K_0'=11$. Then $M_{\min}=\lceil5329/2^{13}\rceil=1$ for $\tau=1$ and $M_{\min}=\lceil5329/2^{11}\rceil=3$ for $\tau=3$. The order of $2$ modulo $73$ is $9$, and $36$ classes modulo $73$ are double, both for $S_1$ and for $S_3$. The test of Remark~\ref{rem:check}(2) succeeds for all $9$ residues $e$ modulo $73$ and all $2048$ odd $w<2^{12}$, for $\tau=1$ and for $\tau=3$. So condition (S) holds. The values of $h_1$ and $h_3$ on each side of $K_0$ and $K_0'$ are given by
+\lstinputlisting[linerange=55-57]{small_checks.gp}
+which prints
+\begin{lstlisting}
+p=73: h1(2^12) = -13819026, h1(2^13) = 106578798, h3(2^10) = -2549760, h3(2^11) = 3289088
+\end{lstlisting}
+The full test of Remark~\ref{rem:check}(1), the values of $M_{\min}$, the orders of $2$ and the numbers of double classes are recomputed by part~6 of \texttt{small\_checks.gp}.
+
+The search starts at $h_0=14$ with the $8192$ balls $\B(\tau,14)$. Table~\ref{tab:tree73} gives the classification level by level.
+
+\begin{table}[ht]
+\caption{The search at $p=73$. A ball is closed, a centre, or sparse as in Proposition~\ref{prop:cert}; split balls are replaced by their two halves at the next level.}\label{tab:tree73}
+\begin{tabular}{rrrrrr}
+\hline
+level $h$ & balls & closed & centre & sparse & split\\
+\hline
+14 & 8192 & 8158 & 16 & 10 & 8\\
+15 & 16 & 11 & 0 & 0 & 5\\
+16 & 10 & 7 & 2 & 0 & 1\\
+17 & 2 & 2 & 0 & 0 & 0\\
+\hline
+\end{tabular}
+\end{table}
+
+The $18$ centres are the elements $t\ge5$ of $\cE_{73}$: all of them at level $14$ except $199$ and $203$, which are centres at level $16$. The $10$ sparse balls at level $14$ are $\B(1,14)$ and $\B(8193,14)$, contained in $\B(1,13)$, and the eight balls $\B(3+2048i,14)$ with $0\le i\le7$, contained in $\B(3,11)$. The balls split at level $14$ are those of $199$, $203$, $1025$, $1027$, $2049$, $4097$, $6145$ and $12289$. In total the partition $\mathcal{P}$ consists of $8178$ closed balls, $18$ centres and $10$ sparse balls. Proposition~\ref{prop:cert} gives $\cE_{73}=\cE$, the base $r_t$ for every $t\in\cE$, and its uniqueness for $t\ge5$. Since $24\cdot222=73^2-1$, we have $r_t\equiv222\,t\pmod{5329}$. This proves Theorem~\ref{thm:73}.
+
+\subsection*{Theorem~\ref{thm:97}}
+The same computation at $p=97$ uses the set $\cE$ of Theorem~\ref{thm:97}. Step 1 verifies the hypothesis of Lemma~\ref{lem:sturm} for its $27$ elements $t\ge5$, with Sturm bounds from $288$ to $18816$ (for $t=391$), using $c_t(N)$ up to $N=76031$. Step 2 uses $\kappa=194$ and $\mu=3000$; the quadratic tests give $K_0=13$ and $K_0'=11$, so $M_{\min}=2$ and $5$; the order of $2$ modulo $97$ is $48$, and the test of Remark~\ref{rem:check}(2) succeeds for all $48$ residues $e$ and all $2048$ odd $w<2^{12}$, for both $\tau$. The search starts at $h_0=14$:
+
+\begin{center}
+\begin{tabular}{rrrrrr}
+\hline
+level $h$ & balls & closed & centre & sparse & split\\
+\hline
+14 & 8192 & 8138 & 13 & 10 & 31\\
+15 & 62 & 45 & 7 & 0 & 10\\
+16 & 20 & 12 & 6 & 0 & 2\\
+17 & 4 & 3 & 0 & 0 & 1\\
+18 & 2 & 1 & 1 & 0 & 0\\
+\hline
+\end{tabular}
+\end{center}
+
+\noindent The $27$ centres are the elements $t\ge5$ of $\cE$, the last one being $391$ at level $18$. Proposition~\ref{prop:cert} and $24\cdot392=97^2-1$ give Theorem~\ref{thm:97}.
+
+\section{Computations at thirty primes and independent checks}\label{sec:comp}
+
+This section describes the programs, proves Theorem~\ref{thm:all}, and records which computations were repeated independently.
+
+\subsection{Programs}
+The certificates were computed by \texttt{kztree}, a Rust program of about 500 lines that implements the tests of Lemma~\ref{lem:sturm}, Remark~\ref{rem:check} and Proposition~\ref{prop:cert} and the search of Section~\ref{sec:bad}, on top of a small library for power series over $\F$ stored as bit arrays. Following Lemma~\ref{lem:digits}, a series $f_1^\tau\bmod q^{2^h}$ is computed as a product of lacunary factors, one for each binary digit of $\tau$ or pair of adjacent nonzero digits: $f_{2^i}$, whose exponents are $2^iP_j$, or $f_{2^i}f_{2^{i+1}}\equiv f_{2^i}^3$, whose exponents are $2^iQ_j$ \cite[Theorem~27]{KZ3}. At the first level of the search the products are organised as a traversal of the binary digits from the lowest one up, so that partial products are shared between the balls. The programs ran on an AMD Ryzen 9 5900X with two threads, compiled with Rust~1.99 (nightly, August 2026).
+
+The input list $\cE$ at each prime comes from a separate scan with a second Rust program, \texttt{kzker}, which tests the congruence $a_t(pm)+a_t(m/p)\equiv0$ on an initial range of $m$ for every odd $t<2^{14}$ (and $t<2^{17}$ at $p=73$). The proofs do not depend on this scan: condition (G) is checked for each $t\in\cE$ by Lemma~\ref{lem:sturm}, and completeness of $\cE$ is certified by the search.
+
+\subsection{Proof of Theorem~\ref{thm:all}}
+At each of the 30 primes $p\equiv1\pmod{24}$ below $2000$ we ran the computation of Section~\ref{sec:proof} with $\kappa=2p$, $\mu=3000$, and $h_0$ the least $h$ with $2^h\ge p^2+40p$; this choice of $h_0$ only affects the running time. In every case condition (G) holds for every $t\in\cE$ with $t\ge5$, condition (S) holds for $\tau=1$ and $\tau=3$ through the test of Remark~\ref{rem:check}(2), and the search terminates. Every $t\ge5$ in $\cE$ appears as a centre, so the base $r_t$ is unique for $t\ge5$. Proposition~\ref{prop:cert} gives Theorem~\ref{thm:all}. Table~\ref{tab:primes} lists the results and running times, and Table~\ref{tab:sets} lists the sets.
+
+\begin{table}[ht]
+\caption{The thirty primes $p\equiv1\pmod{24}$ below 2000: size and largest element of $\cE_p$, starting level $h_0$ and last level $h_1$ of the search, the exponents $K_0$ and $K_0'$ of Lemma~\ref{lem:sparse}, and the wall-clock time in seconds on two threads.}\label{tab:primes}
+\small
+\begin{tabular}{rrrrrrrr@{\qquad}rrrrrrrr}
+\hline
+$p$ & $|\cE_p|$ & $\max$ & $h_0$ & $h_1$ & $K_0$ & $K_0'$ & time & $p$ & $|\cE_p|$ & $\max$ & $h_0$ & $h_1$ & $K_0$ & $K_0'$ & time\\
+\hline
+73 & 20 & 203 & 14 & 17 & 13 & 11 & 0.07 & 1033 & 50 & 1025 & 21 & 26 & 14 & 12 & 91.10\\
+97 & 29 & 391 & 14 & 18 & 13 & 11 & 0.12 & 1129 & 26 & 405 & 21 & 25 & 14 & 12 & 59.85\\
+193 & 18 & 71 & 16 & 17 & 13 & 11 & 0.26 & 1153 & 49 & 399 & 21 & 25 & 14 & 12 & 69.11\\
+241 & 19 & 201 & 17 & 19 & 13 & 11 & 0.46 & 1201 & 41 & 429 & 21 & 25 & 14 & 12 & 79.49\\
+313 & 23 & 405 & 17 & 21 & 13 & 12 & 0.79 & 1249 & 30 & 1025 & 21 & 26 & 14 & 12 & 73.00\\
+337 & 33 & 257 & 17 & 21 & 13 & 12 & 1.15 & 1297 & 22 & 259 & 21 & 25 & 14 & 12 & 56.82\\
+409 & 33 & 405 & 18 & 22 & 13 & 12 & 2.14 & 1321 & 34 & 391 & 21 & 25 & 14 & 13 & 65.77\\
+433 & 29 & 201 & 18 & 21 & 13 & 12 & 1.91 & 1489 & 30 & 403 & 22 & 26 & 14 & 13 & 188.28\\
+457 & 34 & 393 & 18 & 22 & 13 & 12 & 2.56 & 1609 & 50 & 397 & 22 & 26 & 14 & 13 & 247.42\\
+577 & 35 & 255 & 19 & 22 & 13 & 12 & 6.53 & 1657 & 36 & 515 & 22 & 26 & 14 & 13 & 223.11\\
+601 & 20 & 203 & 19 & 22 & 13 & 12 & 4.95 & 1753 & 53 & 1025 & 22 & 27 & 14 & 13 & 308.28\\
+673 & 29 & 523 & 19 & 24 & 14 & 12 & 8.27 & 1777 & 62 & 779 & 22 & 27 & 14 & 13 & 324.16\\
+769 & 21 & 259 & 20 & 23 & 14 & 12 & 14.82 & 1801 & 20 & 203 & 22 & 25 & 14 & 13 & 181.79\\
+937 & 46 & 259 & 20 & 24 & 14 & 12 & 27.06 & 1873 & 19 & 201 & 22 & 25 & 14 & 13 & 177.98\\
+1009 & 29 & 201 & 21 & 24 & 14 & 12 & 46.80 & 1993 & 26 & 259 & 22 & 26 & 15 & 13 & 221.77\\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Independent checks}\label{sec:checks}
+A second implementation in SageMath \cite{Sage} and PARI/GP \cite{PARI}, written without reference to the code of \texttt{kztree}, redoes part of its work. At $p=73$ and $p=193$ it recomputes the whole certificate and agrees at every step; at $p=97$ it builds its own certificate, with other parameters, for the same set of exponents~$t$; at $p=337$ and $p=1033$ it redoes every step except the final search, which takes most of the running time. At the other $25$ primes of Table~\ref{tab:primes} the certificate was checked by \texttt{kztree} alone. The file \texttt{code/impl2/README.md} of the repository maps each of these checks to its script, its recorded output and its running time.
+
+The numbers of Sections~\ref{sec:intro} to~\ref{sec:proof} that do not come from \texttt{kztree}, among them the class counts for $t=25$, the value $c_5(204)$, and the level, weight and character of $H_t$ for every $t\ge5$ in $\cE_{73}\cup\cE_{97}$, are recomputed in PARI/GP by the file \texttt{small\_checks.gp} (Section~\ref{sec:data}); its short parts are printed, with their output, next to the claims they check.
+
+\section{Further remarks and open questions}\label{sec:remarks}
+
+The main open question is whether the finiteness of Theorem~\ref{thm:all} extends to all primes $p\equiv1\pmod{24}$.
+
+\begin{question}
+Is $\cE_p$ finite for every prime $p\equiv1\pmod{24}$? If so, is $\max\cE_p$ bounded independently of $p$?
+\end{question}
+
+At the thirty primes of Table~\ref{tab:primes}, $\max\cE_p$ never exceeds $1025$, and $1025=1+2^{10}$ is the largest element at $p=1033$, $1249$ and $1753$. The size of $\cE_p$ is not monotone in $p$ (it ranges from $18$ at $p=193$ to $62$ at $p=1777$), and different primes can share the same set: $\cE_{73}$, $\cE_{601}$ and $\cE_{1801}$ coincide, as do $\cE_{241}$ and $\cE_{1873}$, and $\cE_{433}$ and $\cE_{1009}$. We have no proof of finiteness for general $p$.
+
+The following facts hold at every prime of Table~\ref{tab:primes}. Every odd $t\le23$ belongs to $\cE_p$; this is proved for $t\le5$ at every prime $p\equiv1\pmod{24}$ by Lemma~\ref{lem:t13} and Proposition~\ref{prop:t5}, and we do not know a proof for $7\le t\le23$. The set $\cE_p$ is exactly the set of odd $t$ with $T_pA_t\equiv0$, where $T_p$ acts on $q$-expansions modulo~2 by $\sum a(m)q^m\mapsto\sum(a(pm)+a(m/p))q^m$. Indeed, $T_pA_t\equiv0$ implies that $f_1^t$ is $(p,r_t)$-even, by the last step of the proof of Lemma~\ref{lem:sturm}; conversely, for $t\ge5$ in $\cE_p$ the congruence was verified through Lemma~\ref{lem:sturm}, and for $t=1$ and $t=3$ it holds because $a_1(m)$ is odd exactly when $m$ is a square prime to $6$, and $a_3(m)$ is odd exactly when $m$ is three times an odd square; since $p\ge5$, the number $pm$ has either form exactly when $m/p$ is an integer of the same form.
+
+This description links $\cE_p$ to modular forms modulo~2. Since $\eta(3z)^8\equiv\eta(24z)$, we have $A_t\equiv C^t$, where $C=\eta(3z)^8$ is the normalised cusp form of weight $4$ on $\Gamma_0(9)$. Charlton, Mauth and Medvedovsky show that $C\equiv\Delta(z)+\Delta(9z)$ and use this to express eta powers modulo~2 through forms of level $1$ and $9$ \cite[Lemma~2.3 and Proposition~2.4]{CMM}. When $3\mid t$, the identity $C^3=\Delta(3z)$ gives $A_t\equiv\Delta(3z)^{t/3}$, and since $T_p$ commutes with $z\mapsto3z$ for $p\ne3$, the condition $T_pA_t\equiv0$ becomes $T_p\Delta^{t/3}\equiv0$, a question about forms of level~$1$ modulo~$2$, where the action of the Hecke operators was studied by Nicolas and Serre \cite{NS1,NS2}. We have not found a description of the action of $T_p$ on the powers of $C$ that would prove the finiteness of $\cE_p$.
+
+For a fixed prime $p\not\equiv1\pmod{24}$, Keith and Zanello ask whether $f_1^t$ is $p^2$-even for a positive proportion of odd $t$, and whether the same is true for a positive proportion of primes $p\equiv1\pmod{24}$ \cite[Question~41]{KZ3}. At each of the thirty primes $p\equiv1\pmod{24}$ below $2000$, Theorem~\ref{thm:all} shows that $\cE_p$ is finite, so it has density zero among the odd integers. If $\cE_p$ is finite for every prime $p\equiv1\pmod{24}$, the second part of the question has a negative answer. For the family $t=a+b\cdot2^e$ used in \cite{KZ3}, Theorem~\ref{thm:73} shows that its members in $\cE_{73}$ are exactly $3,5,7,9,11,13,15,17,19,51$ and $65$: the lines
+\lstinputlisting[linerange={62-62,85-87}]{small_checks.gp}
+print
+\begin{lstlisting}
+family members in E_73: [3, 5, 7, 9, 11, 13, 15, 17, 19, 51, 65]
+\end{lstlisting}
+
+\section{Code, certificates and formalization}\label{sec:data}
+
+The repository \url{https://github.com/mt0-svg/keith-zanello-73} contains the source code and the outputs used in the proofs:
+\begin{itemize}
+\item \texttt{kztree.rs} and \texttt{kzker.rs}, the two Rust programs of Section~\ref{sec:comp}, with the power series library \texttt{ser2.rs} they use;
+\item \texttt{tree\_p$p$.txt} for each of the thirty primes, the output of \texttt{kztree}: parameters, the input list $\cE$, the values of $K_0$, $K_0'$ and $M_{\min}$, the results of the tests of Remark~\ref{rem:check}, the counts of the search level by level, the list of centres and the final verdict;
+\item \texttt{ker\_eta\_p$p$\_b$B$.txt}, the outputs of the scan that produced the input lists;
+\item the scripts and outputs of the second implementation of Section~\ref{sec:checks}, with an index that maps each check to its script and output;
+\item a checker script, \texttt{check.sh}, that rebuilds \texttt{kztree}, reruns it at chosen primes, and compares the outputs with the recorded ones, ignoring running times;
+\item a PARI/GP file, \texttt{small\_checks.gp}, that recomputes in under a second the numbers used in Sections~\ref{sec:intro} to~\ref{sec:proof} that do not come from \texttt{kztree}: the class counts for $t=25$, the bases $r_t$, the value $c_5(204)$, the constants $K_0$, $K_0'$, $M_{\min}$ and the orders of $2$, and the weight, level and character of $H_t$ with the congruence $H_t\equiv A_t$ up to $q^{2000}$ for every $t\ge5$ in $\cE_{73}\cup\cE_{97}$; the parts that fit in a few lines are printed in the text next to the claims they check, while the exact test for $K_0$ and $K_0'$ and the check of $H_t$ are only in the file.
+\end{itemize}
+The file \texttt{README.md} of the repository lists every file with its role. The running times recorded in Table~\ref{tab:primes} add up to about 42 minutes on two threads, most of it for the primes above 1000.
+
+\emph{Formalization.} The repository also contains a formalization in Lean~4 \cite{Lean}, on Mathlib \cite{Mathlib}, of Theorem~\ref{thm:73} and of the resulting failure of Conjecture~B, with no hypothesis. The statement, with the definitions it uses, is in \texttt{Challenge.lean}; the continuous integration of the repository builds the proof and runs Comparator \cite{Comp}, which checks that the proved theorems have exactly the statements of \texttt{Challenge.lean} and use only the axioms \texttt{propext}, \texttt{Classical.choice} and \texttt{Quot.sound}. The formal proof of Lemma~\ref{lem:sturm} does not use the eta quotient $H_t$ of level $576$: it works with modular forms of weight $2$ on $\Gamma_0(9)$ and trivial character, whose product $W$ is congruent to $\eta(24z)$ modulo $2$, and obtains the stronger bound $4t$. The Hecke operators $T_p$ on $M_k(\Gamma_0(N))$, the vanishing bound of Sturm for complex modular forms on $\Gamma_0(N)$ and four lemmas on the behaviour of the Eisenstein series $E_2$ at the cusps are ported from \cite{FLT}. Sturm's theorem modulo~$2$ on $\Gamma_0(9)$ and the congruence $W\equiv\eta(24z)$ modulo~$2$ are proved in the repository.
+
+\emph{Data availability.} The code, the certificate outputs and the formal proofs that support the findings of this paper are in the repository above, and archived, with the complete output of every check rerun for the release, at Zenodo, doi:\href{https://doi.org/10.5281/zenodo.23014000}{10.5281/zenodo.23014000}.
+
+\appendix
+\section{\texorpdfstring{The sets $\cE_p$}{The sets E\_p}}\label{app:sets}
+
+Table~\ref{tab:sets} lists, for each prime $p\equiv1\pmod{24}$ below $2000$, the elements of $\cE_p$ larger than $23$; by Theorem~\ref{thm:all}, $\cE_p$ consists of these and of the odd integers from $1$ to $23$.
+
+\begin{table}[ht]
+\caption{The elements $t>23$ of $\cE_p$.}\label{tab:sets}
+\renewcommand{\baselinestretch}{1}\selectfont
+\footnotesize
+\renewcommand{\arraystretch}{1.1}
+\begin{tabular}{r p{0.85\textwidth}}
+\hline
+$p$ & $t\in\cE_p$, $t>23$\\
+\hline
+73 & 51, 55, 59, 61, 65, 69, 199, 203\\
+97 & 25, 29, 31, 35, 37, 41, 43, 47, 57, 63, 103, 107, 115, 119, 121, 133, 391\\
+193 & 49, 53, 57, 63, 67, 71\\
+241 & 49, 53, 57, 63, 67, 71, 201\\
+313 & 27, 33, 39, 45, 49, 53, 67, 71, 105, 117, 405\\
+337 & 27, 33, 39, 45, 51, 55, 57, 59, 61, 63, 65, 69, 75, 81, 87, 93, 195, 207, 219, 249, 257\\
+409 & 25, 27, 29, 31, 33, 35, 37, 39, 41, 43, 45, 47, 97, 101, 105, 109, 113, 117, 131, 139, 405\\
+433 & 25, 29, 31, 35, 37, 41, 43, 47, 57, 63, 97, 101, 109, 113, 131, 139, 201\\
+457 & 25, 27, 29, 31, 33, 35, 37, 39, 41, 43, 45, 47, 103, 105, 107, 115, 117, 119, 121, 133, 391, 393\\
+577 & 27, 33, 39, 45, 51, 55, 57, 59, 61, 63, 65, 69, 75, 81, 87, 93, 199, 201, 203, 213, 237, 243, 255\\
+601 & 51, 55, 59, 61, 65, 69, 199, 203\\
+673 & 25, 29, 31, 35, 37, 41, 43, 47, 57, 63, 97, 101, 109, 113, 131, 139, 523\\
+769 & 49, 53, 57, 63, 67, 71, 193, 197, 259\\
+937 & 25, 29, 31, 35, 37, 41, 43, 47, 49, 51, 53, 55, 59, 61, 65, 67, 69, 71, 73, 77, 79, 83, 85, 89, 91, 95, 193, 197, 205, 209, 229, 233, 247, 259\\
+1009 & 25, 29, 31, 35, 37, 41, 43, 47, 57, 63, 97, 101, 109, 113, 131, 139, 201\\
+1033 & 25, 29, 31, 35, 37, 41, 43, 47, 49, 51, 53, 55, 59, 61, 65, 67, 69, 71, 73, 77, 79, 83, 85, 89, 91, 95, 195, 199, 203, 211, 215, 223, 227, 241, 257, 771, 779, 1025\\
+1129 & 27, 33, 39, 45, 49, 53, 67, 71, 105, 117, 193, 197, 259, 405\\
+1153 & 25, 27, 29, 31, 33, 35, 37, 39, 41, 43, 45, 47, 49, 51, 53, 55, 57, 59, 61, 63, 65, 67, 69, 71, 99, 105, 111, 117, 129, 141, 201, 205, 207, 209, 211, 215, 399\\
+1201 & 27, 33, 39, 45, 51, 55, 57, 59, 61, 63, 65, 69, 75, 81, 87, 93, 99, 105, 111, 117, 123, 129, 135, 141, 199, 203, 411, 423, 429\\
+1249 & 27, 33, 39, 45, 51, 55, 57, 59, 61, 63, 65, 69, 195, 201, 257, 261, 771, 1025\\
+1297 & 49, 53, 57, 63, 67, 71, 193, 197, 201, 259\\
+1321 & 25, 27, 29, 31, 33, 35, 37, 39, 41, 43, 45, 47, 99, 103, 107, 111, 115, 119, 121, 129, 133, 391\\
+1489 & 25, 29, 31, 35, 37, 41, 43, 47, 57, 63, 103, 107, 115, 119, 121, 133, 201, 403\\
+1609 & 25, 29, 31, 35, 37, 41, 43, 47, 49, 51, 53, 55, 59, 61, 65, 67, 69, 71, 97, 101, 103, 107, 109, 113, 115, 119, 127, 131, 139, 143, 193, 197, 211, 215, 259, 263, 389, 397\\
+1657 & 25, 27, 29, 31, 33, 35, 37, 39, 41, 43, 45, 47, 97, 101, 105, 109, 113, 117, 131, 139, 385, 393, 401, 515\\
+1753 & 25, 29, 31, 35, 37, 41, 43, 47, 49, 51, 53, 55, 59, 61, 65, 67, 69, 71, 97, 101, 103, 107, 109, 113, 115, 119, 127, 131, 139, 143, 195, 199, 203, 205, 209, 253, 257, 389, 397, 771, 1025\\
+1777 & 25, 27, 29, 31, 33, 35, 37, 39, 41, 43, 45, 47, 49, 51, 53, 55, 57, 59, 61, 63, 65, 67, 69, 71, 73, 77, 79, 83, 85, 89, 91, 95, 99, 105, 111, 117, 129, 141, 195, 199, 203, 211, 213, 215, 235, 239, 245, 257, 399, 779\\
+1801 & 51, 55, 59, 61, 65, 69, 199, 203\\
+1873 & 49, 53, 57, 63, 67, 71, 201\\
+1993 & 27, 33, 39, 45, 49, 53, 67, 71, 99, 111, 129, 193, 197, 259\\
+\hline
+\end{tabular}
+\end{table}
+
+\section*{Contact}
+Questions, corrections and comments are welcome as issues on the repository: \url{\repo/issues/new/choose}.
+
+\clearpage
+\begin{thebibliography}{99}
+\raggedright
+
+\bibitem{CMM} S. Charlton, L. Mauth, and A. Medvedovsky: \emph{On the parity of coefficients of eta powers}, preprint, arXiv:2411.17638v1 (2024).
+
+\bibitem{Comp} Lean FRO: \emph{Comparator}, commit \texttt{d03acab}, \url{https://github.com/leanprover/comparator}.
+
+\bibitem{FLT} Anthropic: \emph{Fermat's Last Theorem in Lean 4}, commit \texttt{6e837e7}, \url{https://github.com/anthropics/fermats-last-theorem}.
+
+\bibitem{GH} B. Gordon and K. Hughes: \emph{Multiplicative properties of $\eta$-products, II}, in: A tribute to Emil Grosswald: number theory and related analysis, Contemp. Math. \textbf{143} (1993), 415--430.
+
+\bibitem{KZ1} W.J. Keith and F. Zanello: \emph{Parity of the coefficients of certain eta-quotients}, J. Number Theory \textbf{235} (2022), 275--304; arXiv:2010.09881v2. Theorem numbers refer to the arXiv version.
+
+\bibitem{KZ2} W.J. Keith and F. Zanello: \emph{Parity of the coefficients of certain eta-quotients, II: The case of even-regular partitions}, J. Number Theory \textbf{251} (2023), 84--101.
+
+\bibitem{KZ3} W.J. Keith and F. Zanello: \emph{Parity of the coefficients of certain eta-quotients, III: two special classes}, Ann. Comb. (2026), published online, doi:10.1007/s00026-026-00833-x; arXiv:2404.15716v3 (21 May 2026). Theorem, conjecture and section numbers refer to arXiv version 3.
+
+\bibitem{Lean} L. de Moura and S. Ullrich: \emph{The Lean~4 theorem prover and programming language}, in: Automated Deduction, CADE~28, Lecture Notes in Comput. Sci. \textbf{12699}, Springer, Cham (2021), 625--635.
+
+\bibitem{Lig} G. Ligozat: \emph{Courbes modulaires de genre 1}, M\'em. Soc. Math. France \textbf{43} (1975), 5--80.
+
+\bibitem{Mathlib} The mathlib Community: \emph{The Lean mathematical library}, in: Proceedings of the 9th ACM SIGPLAN International Conference on Certified Programs and Proofs (CPP 2020), ACM, New York (2020), 367--381, doi:10.1145/3372885.3373824.
+
+\bibitem{New} M. Newman: \emph{Construction and application of a class of modular functions, II}, Proc. London Math. Soc. (3) \textbf{9} (1959), 373--387.
+
+\bibitem{NS1} J.-L. Nicolas and J.-P. Serre: \emph{Formes modulaires de niveau 1 en caract\'eristique 2 : l'ordre de nilpotence des op\'erateurs de Hecke}, C. R. Math. Acad. Sci. Paris \textbf{350} (2012), 343--348. % english-ok: French title of a cited paper
+
+\bibitem{NS2} J.-L. Nicolas and J.-P. Serre: \emph{Formes modulaires de niveau 1 en caract\'eristique 2 : structure de l'alg\`ebre de Hecke}, C. R. Math. Acad. Sci. Paris \textbf{350} (2012), 449--454. % english-ok: French title of a cited paper
+
+\bibitem{PARI} The PARI Group: \emph{PARI/GP}, version 2.17.4, Universit\'e de Bordeaux, \url{https://pari.math.u-bordeaux.fr/}.
+
+\bibitem{Sage} The Sage Developers: \emph{SageMath, the Sage Mathematics Software System}, version 10.9 (2026), \url{https://www.sagemath.org}.
+
+\bibitem{Sturm} J. Sturm: \emph{On the congruence of modular forms}, in: Number theory (New York, 1984--1985), Lecture Notes in Math. \textbf{1240}, Springer, Berlin (1987), 275--280.
+
+\end{thebibliography}
+
+\end{document}

@@ -1,0 +1,27 @@
+  ***   Warning: new maximum stack size = 2000003072 (1907.352 Mbytes).
+dim S_4(Gamma_0(9)) = 1; dim M_4(Gamma_0(9)) = 5
+eta(3z)^8 parameters [N,k,chi,...] = [9, 4, 1, y, t - 1]
+eta(3z)^8 in S_4(Gamma_0(9)): coordinates [1]~
+eta(3z)^8 = [0, 1, 0, 0, -8, 0, 0, 20, 0, 0, 0, 0, 0, -70, 0, 0, 64, 0, 0, 56, 0]
+equals the unique newform (LMFDB 9.4.a.a)
+eta(3z)^8 - eta(24z): odd coefficients up to q^2000: 0
+  *** subst: Warning: increasing stack size to 16000000.
+parities of c_t(n) computed for odd t <= 249, n <= 15149
+t >= 5 in E73 with heckeCoeff(73,t,m) even for all m <= 20t: [5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 51, 55, 59, 61, 65, 69, 199, 203] (18 values)
+odd t < 250 outside E73: 105 values; failing at some m <= 4t: 105; not failing: 0
+largest ratio (first odd m)/(4t): 0.21491228070175438596491228070175438597
+[t, first odd m] for the first ten: [[25, 1], [27, 3], [29, 5], [31, 7], [33, 9], [35, 11], [37, 13], [39, 15], [41, 17], [43, 19]]
+t = 5: T_73 eta(3z)^(8t) in S_20(Gamma_0(9)): 1; parity mismatches with heckeCoeff for m <= 40: 0; odd coefficients: 0
+t = 7: T_73 eta(3z)^(8t) in S_28(Gamma_0(9)): 1; parity mismatches with heckeCoeff for m <= 48: 0; odd coefficients: 0
+t = 9: T_73 eta(3z)^(8t) in S_36(Gamma_0(9)): 1; parity mismatches with heckeCoeff for m <= 56: 0; odd coefficients: 0
+t = 13: T_73 eta(3z)^(8t) in S_52(Gamma_0(9)): 1; parity mismatches with heckeCoeff for m <= 72: 0; odd coefficients: 0
+t = 15: T_73 eta(3z)^(8t) in S_60(Gamma_0(9)): 1; parity mismatches with heckeCoeff for m <= 80: 0; odd coefficients: 0
+  *** _ZM_inv_worker: Warning: increasing stack size to 32000000.
+  *** _polint_worker: Warning: increasing stack size to 64000000.
+  *** _polint_worker: Warning: increasing stack size to 128000000.
+t = 25: T_73 eta(3z)^(8t) in S_100(Gamma_0(9)): 1; parity mismatches with heckeCoeff for m <= 120: 0; odd coefficients: 3
+  *** mfinit: Warning: increasing stack size to 256000000.
+t = 27: T_73 eta(3z)^(8t) in S_108(Gamma_0(9)): 1; parity mismatches with heckeCoeff for m <= 128: 0; odd coefficients: 3
+t = 29: T_73 eta(3z)^(8t) in S_116(Gamma_0(9)): 1; parity mismatches with heckeCoeff for m <= 136: 0; odd coefficients: 4
+RESULT PASS
+exit 0

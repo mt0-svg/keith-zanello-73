@@ -1,0 +1,8 @@
+  ***   Warning: new maximum stack size = 2000003072 (1907.352 Mbytes).
+tau = 1: K0 = 10 (exact condition fails at K0 - 1: 1), h(X) = 2/3*X^2 - 593*X + 439/3, Mmin = 6
+tau = 3: K0 = 9 (exact condition fails at K0 - 1: 1), h(X) = 2*X^2 - 593*X, Mmin = 11
+|<2> mod p^2| = 657, j = 9, odd w mod 2^j: 256
+tau = 1: combos checked 168192, failures 0, min #special M per w = 22
+tau = 3: combos checked 168192, failures 0, min #special M per w = 20
+negative control (small set {0}, w = 1): failures 657 of 657 (must be > 0)
+SPARSE CHECK: PASS

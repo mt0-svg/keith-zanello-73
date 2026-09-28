@@ -1,0 +1,53 @@
+p=1201 kstart=21 mu=3000 list=ker_eta_p1201_b14.txt good=1,3,5,7,9,11,13,15,17,19,21,23,27,33,39,45,51,55,57,59,61,63,65,69,75,81,87,93,99,105,111,117,123,129,135,141,199,203,411,423,429
+# kztree p=1201 kstart=21 maxdepth=29 kappa=2402 mu=3000 good=[1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 27, 33, 39, 45, 51, 55, 57, 59, 61, 63, 65, 69, 75, 81, 87, 93, 99, 105, 111, 117, 123, 129, 135, 141, 199, 203, 411, 423, 429]
+step1 sturm t=5 T_p G_t = 0 up to m <= 288: true
+step1 sturm t=7 T_p G_t = 0 up to m <= 384: true
+step1 sturm t=9 T_p G_t = 0 up to m <= 480: true
+step1 sturm t=11 T_p G_t = 0 up to m <= 576: true
+step1 sturm t=13 T_p G_t = 0 up to m <= 672: true
+step1 sturm t=15 T_p G_t = 0 up to m <= 768: true
+step1 sturm t=17 T_p G_t = 0 up to m <= 864: true
+step1 sturm t=19 T_p G_t = 0 up to m <= 960: true
+step1 sturm t=21 T_p G_t = 0 up to m <= 1056: true
+step1 sturm t=23 T_p G_t = 0 up to m <= 1152: true
+step1 sturm t=27 T_p G_t = 0 up to m <= 1344: true
+step1 sturm t=33 T_p G_t = 0 up to m <= 1632: true
+step1 sturm t=39 T_p G_t = 0 up to m <= 1920: true
+step1 sturm t=45 T_p G_t = 0 up to m <= 2208: true
+step1 sturm t=51 T_p G_t = 0 up to m <= 2496: true
+step1 sturm t=55 T_p G_t = 0 up to m <= 2688: true
+step1 sturm t=57 T_p G_t = 0 up to m <= 2784: true
+step1 sturm t=59 T_p G_t = 0 up to m <= 2880: true
+step1 sturm t=61 T_p G_t = 0 up to m <= 2976: true
+step1 sturm t=63 T_p G_t = 0 up to m <= 3072: true
+step1 sturm t=65 T_p G_t = 0 up to m <= 3168: true
+step1 sturm t=69 T_p G_t = 0 up to m <= 3360: true
+step1 sturm t=75 T_p G_t = 0 up to m <= 3648: true
+step1 sturm t=81 T_p G_t = 0 up to m <= 3936: true
+step1 sturm t=87 T_p G_t = 0 up to m <= 4224: true
+step1 sturm t=93 T_p G_t = 0 up to m <= 4512: true
+step1 sturm t=99 T_p G_t = 0 up to m <= 4800: true
+step1 sturm t=105 T_p G_t = 0 up to m <= 5088: true
+step1 sturm t=111 T_p G_t = 0 up to m <= 5376: true
+step1 sturm t=117 T_p G_t = 0 up to m <= 5664: true
+step1 sturm t=123 T_p G_t = 0 up to m <= 5952: true
+step1 sturm t=129 T_p G_t = 0 up to m <= 6240: true
+step1 sturm t=135 T_p G_t = 0 up to m <= 6528: true
+step1 sturm t=141 T_p G_t = 0 up to m <= 6816: true
+step1 sturm t=199 T_p G_t = 0 up to m <= 9600: true
+step1 sturm t=203 T_p G_t = 0 up to m <= 9792: true
+step1 sturm t=411 T_p G_t = 0 up to m <= 19776: true
+step1 sturm t=423 T_p G_t = 0 up to m <= 20352: true
+step1 sturm t=429 T_p G_t = 0 up to m <= 20640: true
+sparse tau=1: 300 values of e mod p, reduced failures 0, full checks 0
+step2 sparse tau=1 K0=14 Mmin=89 failures(e,w)=0 [] [0.2 s]
+sparse tau=3: 300 values of e mod p, reduced failures 0, full checks 0
+step2 sparse tau=3 K0=12 Mmin=353 failures(e,w)=0 [] [0.4 s]
+step3 level 21: [45.7 s] nodes 1048576, closed 1047897, lemma2 5, sparse 640, split 34 [11, 13, 15, 17, 19, 21, 23, 39, 45, 51, 55, 57, 59, 61, 63, 65, 69, 75, 81, 87, 93, 99, 105, 111, 117, 123, 129, 135, 141, 199, 203, 411, 423, 429]
+step3 level 22: [50.5 s] nodes 68, closed 34, lemma2 17, sparse 0, split 17 [75, 81, 87, 93, 99, 105, 111, 117, 123, 129, 135, 141, 199, 203, 411, 423, 429]
+step3 level 23: [58.2 s] nodes 34, closed 17, lemma2 11, sparse 0, split 6 [141, 199, 203, 411, 423, 429]
+step3 level 24: [66.5 s] nodes 12, closed 6, lemma2 3, sparse 0, split 3 [411, 423, 429]
+step3 level 25: [79.5 s] nodes 6, closed 3, lemma2 3, sparse 0, split 0 []
+lemma2 centers (t, level): [(5, 21), (7, 21), (9, 21), (11, 22), (13, 22), (15, 22), (17, 22), (19, 22), (21, 22), (23, 22), (27, 21), (33, 21), (39, 22), (45, 22), (51, 22), (55, 22), (57, 22), (59, 22), (61, 22), (63, 22), (65, 22), (69, 22), (75, 23), (81, 23), (87, 23), (93, 23), (99, 23), (105, 23), (111, 23), (117, 23), (123, 23), (129, 23), (135, 23), (141, 24), (199, 24), (203, 24), (411, 25), (423, 25), (429, 25)]
+VERDICT: PASS (good odd 2-adic integers = the listed ones)
+time 79.49 s, maxrss 215964 KB

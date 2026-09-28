@@ -1,0 +1,6 @@
+  ***   Warning: new maximum stack size = 500002816 (476.840 Mbytes).
+(a) F2 coefficient = s1(n)/3 [n == 2 mod 3], integral, up to n = 5000: mismatches 0
+(b) -(E2(z) - 4E2(3z) + 3E2(9z))/24 = sum_{3 not | n} s1(n) q^n up to n = 5000: mismatches 0
+(c) Gauss sum g = -1.1754943508222875080 E-38 + 1.7320508075688772935274463415058723670*I (i sqrt 3 = 1.7320508075688772935274463415058723670*I); sum_u chi(u) w^(nu) = chi(n) g for n <= 60: mismatches 0
+RESULT PASS
+exit 0

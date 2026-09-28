@@ -1,0 +1,10 @@
+Keith-Zanello at p = 73
+Licensed under the Apache License, Version 2.0 (see LICENSE).
+
+This project contains code ported from Fermat's Last Theorem in Lean 4
+(https://github.com/anthropics/fermats-last-theorem), whose NOTICE begins: "Fermat's Last Theorem
+in Lean 4 / Copyright 2026 Anthropic, PBC / This repository is made available under the Apache
+License, Version 2.0 (see the file LICENSE)." Its numbered items concern third-party material that
+its ATTRIBUTION.md lists file by file; none of the ported files is listed there. The ported code
+builds on Mathlib, Copyright (c) the respective Mathlib authors, Apache License 2.0. The ported
+files and their changes are listed in README.md, section Built on, and in each file's header.

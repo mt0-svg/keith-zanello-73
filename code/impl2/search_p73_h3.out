@@ -1,0 +1,17 @@
+level 3: nodes 4, closed 0, lemma2 0, sparse 0, split 4
+level 4: nodes 8, closed 0, lemma2 0, sparse 0, split 8
+level 5: nodes 16, closed 0, lemma2 0, sparse 0, split 16
+level 6: nodes 32, closed 0, lemma2 0, sparse 0, split 32
+level 7: nodes 64, closed 0, lemma2 0, sparse 0, split 64
+level 8: nodes 128, closed 0, lemma2 0, sparse 0, split 128
+level 9: nodes 256, closed 0, lemma2 0, sparse 1, split 255
+level 10: nodes 510, closed 0, lemma2 0, sparse 1, split 509
+level 11: nodes 1018, closed 0, lemma2 0, sparse 0, split 1018
+level 12: nodes 2036, closed 0, lemma2 0, sparse 0, split 2036
+level 13: nodes 4072, closed 4043, lemma2 4, sparse 0, split 25 [13, 15, 17, 19, 21, 23, 51, 55, 59, 61, 65, 69, 129, 199, 203, 257, 259, 385, 387, 513, 769, 771, 1537, 5633, 7681]
+level 14: nodes 50, closed 36, lemma2 12, sparse 0, split 2 [199, 203]
+level 15: nodes 4, closed 2, lemma2 0, sparse 0, split 2 [199, 203]
+level 16: nodes 4, closed 2, lemma2 2, sparse 0, split 0 []
+Lemma 2 centers (t, level): [(5, 13), (7, 13), (9, 13), (11, 13), (13, 14), (15, 14), (17, 14), (19, 14), (21, 14), (23, 14), (51, 14), (55, 14), (59, 14), (61, 14), (65, 14), (69, 14), (199, 16), (203, 16)]
+listed t >= 5 not used as centers: []
+TREE: PASS

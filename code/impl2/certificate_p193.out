@@ -1,0 +1,9 @@
+p = 193, kstart = 16, 18 listed t
+(a) kappa = 386, mu = 3000: K0 = {1: 13, 3: 11}, Mmin = {1: 5, 3: 19}
+(b) tau = 1: 96 classes with two small exponents distinct mod p^2, |<2> mod p| = 96, odd w mod 2^12: 2048, reduced failures 0, min #M per w 74
+(b) tau = 3: 96 classes with two small exponents distinct mod p^2, |<2> mod p| = 96, odd w mod 2^12: 2048, reduced failures 0, min #M per w 71
+(c) level 16: nodes 32768, closed 32702, lemma2 7, sparse 40, split 19 [19, 21, 23, 49, 53, 57, 63, 67, 71, 1027, 2049, 3073, 3075, 4097, 6145, 12289, 28673, 45057, 61441]
+(c) level 17: nodes 38, closed 29, lemma2 9, sparse 0, split 0 []
+(c) centers: [(5, 16), (7, 16), (9, 16), (11, 16), (13, 16), (15, 16), (17, 16), (19, 17), (21, 17), (23, 17), (49, 17), (53, 17), (57, 17), (63, 17), (67, 17), (71, 17)]
+NEW PARAMETERS: PASS
+866.61 s 225532 KB

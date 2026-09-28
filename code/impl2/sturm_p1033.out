@@ -1,0 +1,59 @@
+p = 1033, 50 listed t: [1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 29, 31, 35, 37, 41, 43, 47, 49, 51, 53, 55, 59, 61, 65, 67, 69, 71, 73, 77, 79, 83, 85, 89, 91, 95, 195, 199, 203, 211, 215, 223, 227, 241, 257, 771, 779, 1025]
+t = 5: Sturm bound 288, T_p G_t = 0 mod 2 up to bound: True; up to 2x bound: True
+t = 7: Sturm bound 384, T_p G_t = 0 mod 2 up to bound: True; up to 2x bound: True
+t = 9: Sturm bound 480, T_p G_t = 0 mod 2 up to bound: True; up to 2x bound: True
+t = 11: Sturm bound 576, T_p G_t = 0 mod 2 up to bound: True; up to 2x bound: True
+t = 13: Sturm bound 672, T_p G_t = 0 mod 2 up to bound: True; up to 2x bound: True
+t = 15: Sturm bound 768, T_p G_t = 0 mod 2 up to bound: True; up to 2x bound: True
+t = 17: Sturm bound 864, T_p G_t = 0 mod 2 up to bound: True; up to 2x bound: True
+t = 19: Sturm bound 960, T_p G_t = 0 mod 2 up to bound: True; up to 2x bound: True
+t = 21: Sturm bound 1056, T_p G_t = 0 mod 2 up to bound: True; up to 2x bound: True
+t = 23: Sturm bound 1152, T_p G_t = 0 mod 2 up to bound: True; up to 2x bound: True
+t = 25: Sturm bound 1248, T_p G_t = 0 mod 2 up to bound: True; up to 2x bound: True
+t = 29: Sturm bound 1440, T_p G_t = 0 mod 2 up to bound: True; up to 2x bound: True
+t = 31: Sturm bound 1536, T_p G_t = 0 mod 2 up to bound: True; up to 2x bound: True
+t = 35: Sturm bound 1728, T_p G_t = 0 mod 2 up to bound: True; up to 2x bound: True
+t = 37: Sturm bound 1824, T_p G_t = 0 mod 2 up to bound: True; up to 2x bound: True
+t = 41: Sturm bound 2016, T_p G_t = 0 mod 2 up to bound: True; up to 2x bound: True
+t = 43: Sturm bound 2112, T_p G_t = 0 mod 2 up to bound: True; up to 2x bound: True
+t = 47: Sturm bound 2304, T_p G_t = 0 mod 2 up to bound: True; up to 2x bound: True
+t = 49: Sturm bound 2400, T_p G_t = 0 mod 2 up to bound: True; up to 2x bound: True
+t = 51: Sturm bound 2496, T_p G_t = 0 mod 2 up to bound: True; up to 2x bound: True
+t = 53: Sturm bound 2592, T_p G_t = 0 mod 2 up to bound: True; up to 2x bound: True
+t = 55: Sturm bound 2688, T_p G_t = 0 mod 2 up to bound: True; up to 2x bound: True
+t = 59: Sturm bound 2880, T_p G_t = 0 mod 2 up to bound: True; up to 2x bound: True
+t = 61: Sturm bound 2976, T_p G_t = 0 mod 2 up to bound: True; up to 2x bound: True
+t = 65: Sturm bound 3168, T_p G_t = 0 mod 2 up to bound: True; up to 2x bound: True
+t = 67: Sturm bound 3264, T_p G_t = 0 mod 2 up to bound: True; up to 2x bound: True
+t = 69: Sturm bound 3360, T_p G_t = 0 mod 2 up to bound: True; up to 2x bound: True
+t = 71: Sturm bound 3456, T_p G_t = 0 mod 2 up to bound: True; up to 2x bound: True
+t = 73: Sturm bound 3552, T_p G_t = 0 mod 2 up to bound: True; up to 2x bound: True
+t = 77: Sturm bound 3744, T_p G_t = 0 mod 2 up to bound: True; up to 2x bound: True
+t = 79: Sturm bound 3840, T_p G_t = 0 mod 2 up to bound: True; up to 2x bound: True
+t = 83: Sturm bound 4032, T_p G_t = 0 mod 2 up to bound: True; up to 2x bound: True
+t = 85: Sturm bound 4128, T_p G_t = 0 mod 2 up to bound: True; up to 2x bound: True
+t = 89: Sturm bound 4320, T_p G_t = 0 mod 2 up to bound: True; up to 2x bound: True
+t = 91: Sturm bound 4416, T_p G_t = 0 mod 2 up to bound: True; up to 2x bound: True
+t = 95: Sturm bound 4608, T_p G_t = 0 mod 2 up to bound: True; up to 2x bound: True
+t = 195: Sturm bound 9408, T_p G_t = 0 mod 2 up to bound: True; up to 2x bound: True
+t = 199: Sturm bound 9600, T_p G_t = 0 mod 2 up to bound: True; up to 2x bound: True
+t = 203: Sturm bound 9792, T_p G_t = 0 mod 2 up to bound: True; up to 2x bound: True
+t = 211: Sturm bound 10176, T_p G_t = 0 mod 2 up to bound: True; up to 2x bound: True
+t = 215: Sturm bound 10368, T_p G_t = 0 mod 2 up to bound: True; up to 2x bound: True
+t = 223: Sturm bound 10752, T_p G_t = 0 mod 2 up to bound: True; up to 2x bound: True
+t = 227: Sturm bound 10944, T_p G_t = 0 mod 2 up to bound: True; up to 2x bound: True
+t = 241: Sturm bound 11616, T_p G_t = 0 mod 2 up to bound: True; up to 2x bound: True
+t = 257: Sturm bound 12384, T_p G_t = 0 mod 2 up to bound: True; up to 2x bound: True
+t = 771: Sturm bound 37056, T_p G_t = 0 mod 2 up to bound: True; up to 2x bound: True
+t = 779: Sturm bound 37440, T_p G_t = 0 mod 2 up to bound: True; up to 2x bound: True
+t = 1025: Sturm bound 49248, T_p G_t = 0 mod 2 up to bound: True; up to 2x bound: True
+[4.6 s]
+negative controls: 1000 odd t in [5, 2100) not listed; those where T_p G_t = 0 up to the bound: []; largest first failure index m = 311
+[757.3 s]
+t = 5: mfparams(eta(24z)^t theta) = [576, 3, -3, y, t + 1]
+t = 7: mfparams(eta(24z)^t theta) = [576, 4, 12, y, t + 1]
+t = 9: mfparams(eta(24z)^t theta) = [192, 5, -3, y, t + 1]
+t = 771: mfparams(eta(24z)^t theta) = [192, 386, 12, y, t + 1]
+t = 779: mfparams(eta(24z)^t theta) = [576, 390, 12, y, t + 1]
+t = 1025: mfparams(eta(24z)^t theta) = [576, 513, -3, y, t + 1]
+STURM CHECK p = 1033: PASS

@@ -1,0 +1,30 @@
+p=1873 kstart=22 mu=3000 list=ker_eta_p1873_b14.txt good=1,3,5,7,9,11,13,15,17,19,21,23,49,53,57,63,67,71,201
+# kztree p=1873 kstart=22 maxdepth=30 kappa=3746 mu=3000 good=[1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 49, 53, 57, 63, 67, 71, 201]
+step1 sturm t=5 T_p G_t = 0 up to m <= 288: true
+step1 sturm t=7 T_p G_t = 0 up to m <= 384: true
+step1 sturm t=9 T_p G_t = 0 up to m <= 480: true
+step1 sturm t=11 T_p G_t = 0 up to m <= 576: true
+step1 sturm t=13 T_p G_t = 0 up to m <= 672: true
+step1 sturm t=15 T_p G_t = 0 up to m <= 768: true
+step1 sturm t=17 T_p G_t = 0 up to m <= 864: true
+step1 sturm t=19 T_p G_t = 0 up to m <= 960: true
+step1 sturm t=21 T_p G_t = 0 up to m <= 1056: true
+step1 sturm t=23 T_p G_t = 0 up to m <= 1152: true
+step1 sturm t=49 T_p G_t = 0 up to m <= 2400: true
+step1 sturm t=53 T_p G_t = 0 up to m <= 2592: true
+step1 sturm t=57 T_p G_t = 0 up to m <= 2784: true
+step1 sturm t=63 T_p G_t = 0 up to m <= 3072: true
+step1 sturm t=67 T_p G_t = 0 up to m <= 3264: true
+step1 sturm t=71 T_p G_t = 0 up to m <= 3456: true
+step1 sturm t=201 T_p G_t = 0 up to m <= 9696: true
+sparse tau=1: 936 values of e mod p, reduced failures 0, full checks 0
+step2 sparse tau=1 K0=14 Mmin=215 failures(e,w)=0 [] [0.5 s]
+sparse tau=3: 936 values of e mod p, reduced failures 0, full checks 0
+step2 sparse tau=3 K0=13 Mmin=429 failures(e,w)=0 [] [0.9 s]
+step3 level 22: [163.2 s] nodes 2097152, closed 2096363, lemma2 0, sparse 768, split 21 [8193, 24577, 12289, 12291, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 49, 53, 57, 63, 67, 71, 201]
+step3 level 23: [169.2 s] nodes 42, closed 25, lemma2 13, sparse 0, split 4 [63, 67, 71, 201]
+step3 level 24: [173.5 s] nodes 8, closed 4, lemma2 3, sparse 0, split 1 [201]
+step3 level 25: [178.0 s] nodes 2, closed 1, lemma2 1, sparse 0, split 0 []
+lemma2 centers (t, level): [(5, 23), (7, 23), (9, 23), (11, 23), (13, 23), (15, 23), (17, 23), (19, 23), (21, 23), (23, 23), (49, 23), (53, 23), (57, 23), (63, 24), (67, 24), (71, 24), (201, 25)]
+VERDICT: PASS (good odd 2-adic integers = the listed ones)
+time 177.98 s, maxrss 223548 KB

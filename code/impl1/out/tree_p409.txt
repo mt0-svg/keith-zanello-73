@@ -1,0 +1,45 @@
+p=409 kstart=18 mu=3000 list=ker_eta_p409_b14.txt good=1,3,5,7,9,11,13,15,17,19,21,23,25,27,29,31,33,35,37,39,41,43,45,47,97,101,105,109,113,117,131,139,405
+# kztree p=409 kstart=18 maxdepth=26 kappa=818 mu=3000 good=[1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 35, 37, 39, 41, 43, 45, 47, 97, 101, 105, 109, 113, 117, 131, 139, 405]
+step1 sturm t=5 T_p G_t = 0 up to m <= 288: true
+step1 sturm t=7 T_p G_t = 0 up to m <= 384: true
+step1 sturm t=9 T_p G_t = 0 up to m <= 480: true
+step1 sturm t=11 T_p G_t = 0 up to m <= 576: true
+step1 sturm t=13 T_p G_t = 0 up to m <= 672: true
+step1 sturm t=15 T_p G_t = 0 up to m <= 768: true
+step1 sturm t=17 T_p G_t = 0 up to m <= 864: true
+step1 sturm t=19 T_p G_t = 0 up to m <= 960: true
+step1 sturm t=21 T_p G_t = 0 up to m <= 1056: true
+step1 sturm t=23 T_p G_t = 0 up to m <= 1152: true
+step1 sturm t=25 T_p G_t = 0 up to m <= 1248: true
+step1 sturm t=27 T_p G_t = 0 up to m <= 1344: true
+step1 sturm t=29 T_p G_t = 0 up to m <= 1440: true
+step1 sturm t=31 T_p G_t = 0 up to m <= 1536: true
+step1 sturm t=33 T_p G_t = 0 up to m <= 1632: true
+step1 sturm t=35 T_p G_t = 0 up to m <= 1728: true
+step1 sturm t=37 T_p G_t = 0 up to m <= 1824: true
+step1 sturm t=39 T_p G_t = 0 up to m <= 1920: true
+step1 sturm t=41 T_p G_t = 0 up to m <= 2016: true
+step1 sturm t=43 T_p G_t = 0 up to m <= 2112: true
+step1 sturm t=45 T_p G_t = 0 up to m <= 2208: true
+step1 sturm t=47 T_p G_t = 0 up to m <= 2304: true
+step1 sturm t=97 T_p G_t = 0 up to m <= 4704: true
+step1 sturm t=101 T_p G_t = 0 up to m <= 4896: true
+step1 sturm t=105 T_p G_t = 0 up to m <= 5088: true
+step1 sturm t=109 T_p G_t = 0 up to m <= 5280: true
+step1 sturm t=113 T_p G_t = 0 up to m <= 5472: true
+step1 sturm t=117 T_p G_t = 0 up to m <= 5664: true
+step1 sturm t=131 T_p G_t = 0 up to m <= 6336: true
+step1 sturm t=139 T_p G_t = 0 up to m <= 6720: true
+step1 sturm t=405 T_p G_t = 0 up to m <= 19488: true
+sparse tau=1: 204 values of e mod p, reduced failures 0, full checks 0
+step2 sparse tau=1 K0=13 Mmin=21 failures(e,w)=0 [] [0.1 s]
+sparse tau=3: 204 values of e mod p, reduced failures 0, full checks 0
+step2 sparse tau=3 K0=12 Mmin=41 failures(e,w)=0 [] [0.1 s]
+step3 level 18: [1.5 s] nodes 131072, closed 130941, lemma2 12, sparse 96, split 23 [4097, 12289, 2051, 6147, 15, 17, 19, 21, 23, 39, 41, 43, 45, 47, 97, 101, 105, 109, 113, 117, 131, 139, 405]
+step3 level 19: [1.6 s] nodes 46, closed 27, lemma2 10, sparse 0, split 9 [97, 101, 105, 109, 113, 117, 131, 139, 405]
+step3 level 20: [1.8 s] nodes 18, closed 9, lemma2 8, sparse 0, split 1 [405]
+step3 level 21: [1.9 s] nodes 2, closed 1, lemma2 0, sparse 0, split 1 [405]
+step3 level 22: [2.1 s] nodes 2, closed 1, lemma2 1, sparse 0, split 0 []
+lemma2 centers (t, level): [(5, 18), (7, 18), (9, 18), (11, 18), (13, 18), (15, 19), (17, 19), (19, 19), (21, 19), (23, 19), (25, 18), (27, 18), (29, 18), (31, 18), (33, 18), (35, 18), (37, 18), (39, 19), (41, 19), (43, 19), (45, 19), (47, 19), (97, 20), (101, 20), (105, 20), (109, 20), (113, 20), (117, 20), (131, 20), (139, 20), (405, 22)]
+VERDICT: PASS (good odd 2-adic integers = the listed ones)
+time 2.14 s, maxrss 64844 KB

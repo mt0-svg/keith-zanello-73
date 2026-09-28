@@ -1,0 +1,4 @@
+(a) pentagonal series mod 2 = integer product, L = 3000
+(b) F(t, 1500) = integer power mod 2 (PARI eta series) for 45 values of t up to 257
+(c) digit factorisation agrees with plain powering, L = 20000
+ENGINE CHECK: PASS

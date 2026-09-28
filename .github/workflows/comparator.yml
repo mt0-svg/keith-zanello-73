@@ -1,0 +1,94 @@
+name: Comparator
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  comparator:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - name: Free disk space
+        run: sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL && df -h /
+      - uses: actions/checkout@v5
+
+      - uses: actions/checkout@v5
+        with:
+          repository: leanprover/comparator
+          ref: d03acab154d269c06e60e4de7e4cc85deebff94b
+          path: .ci/comparator
+
+      - uses: actions/checkout@v5
+        with:
+          repository: Zouuup/landrun
+          ref: 811cfff51ceaf3d9843708aa6d22e9b84ccac8b4
+          path: .ci/landrun
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+
+      - name: Build Landrun
+        working-directory: .ci/landrun
+        run: go build -o landrun cmd/landrun/main.go
+
+      - name: Set up Lean and fetch the Mathlib cache
+        uses: leanprover/lean-action@v1
+        with:
+          auto-config: false
+          use-mathlib-cache: true
+
+      # Comparator at this commit targets Lean v4.34.0; build it with the project's toolchain so that
+      # lean4export reads the project's .olean files.
+      - name: Align the Comparator toolchain
+        run: cp lean-toolchain .ci/comparator/lean-toolchain
+
+      - name: Build Comparator
+        uses: leanprover/lean-action@v1
+        with:
+          lake-package-directory: .ci/comparator
+          auto-config: false
+          build: true
+          build-args: lean4export comparator
+          use-mathlib-cache: false
+
+      - name: Start time
+        run: echo "START=$(date +%s)" >> "$GITHUB_ENV"
+
+      - name: Run Comparator
+        id: run
+        shell: bash
+        env:
+          COMPARATOR_LANDRUN: ${{ github.workspace }}/.ci/landrun/landrun
+          COMPARATOR_LEAN4EXPORT: ${{ github.workspace }}/.ci/comparator/.lake/packages/lean4export/.lake/build/bin/lean4export
+        run: >-
+          systemd-run --property=RestrictAddressFamilies=~AF_UNIX --user --pty --pipe
+          -E PATH="$PATH"
+          -E COMPARATOR_LANDRUN="$COMPARATOR_LANDRUN"
+          -E COMPARATOR_LEAN4EXPORT="$COMPARATOR_LEAN4EXPORT"
+          --working-directory "$PWD" --
+          bash -c 'lake env .ci/comparator/.lake/build/bin/comparator config.json'
+          2>&1 | tee comparator.log
+
+      - name: Record the result
+        if: always()
+        run: |
+          mkdir -p verify/lean verify/results verify/versions
+          secs=$(($(date +%s) - ${START:-$(date +%s)}))
+          cp comparator.log verify/lean/comparator.txt || true
+          lake env lean --version > verify/versions/lean.txt || true
+          if [ "${{ steps.run.outcome }}" = success ]; then r=PASS; else r=FAIL; fi
+          printf 'comparator\tcomparator config.json (Challenge.lean against Solution.lean)\t%s s\t%s\tlean/comparator.txt\n' "$secs" "$r" > verify/results/comparator.tsv
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: verify-comparator
+          path: verify/

@@ -1,0 +1,31 @@
+p=601 kstart=19 mu=3000 list=ker_eta_p601_b14.txt good=1,3,5,7,9,11,13,15,17,19,21,23,51,55,59,61,65,69,199,203
+# kztree p=601 kstart=19 maxdepth=27 kappa=1202 mu=3000 good=[1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 51, 55, 59, 61, 65, 69, 199, 203]
+step1 sturm t=5 T_p G_t = 0 up to m <= 288: true
+step1 sturm t=7 T_p G_t = 0 up to m <= 384: true
+step1 sturm t=9 T_p G_t = 0 up to m <= 480: true
+step1 sturm t=11 T_p G_t = 0 up to m <= 576: true
+step1 sturm t=13 T_p G_t = 0 up to m <= 672: true
+step1 sturm t=15 T_p G_t = 0 up to m <= 768: true
+step1 sturm t=17 T_p G_t = 0 up to m <= 864: true
+step1 sturm t=19 T_p G_t = 0 up to m <= 960: true
+step1 sturm t=21 T_p G_t = 0 up to m <= 1056: true
+step1 sturm t=23 T_p G_t = 0 up to m <= 1152: true
+step1 sturm t=51 T_p G_t = 0 up to m <= 2496: true
+step1 sturm t=55 T_p G_t = 0 up to m <= 2688: true
+step1 sturm t=59 T_p G_t = 0 up to m <= 2880: true
+step1 sturm t=61 T_p G_t = 0 up to m <= 2976: true
+step1 sturm t=65 T_p G_t = 0 up to m <= 3168: true
+step1 sturm t=69 T_p G_t = 0 up to m <= 3360: true
+step1 sturm t=199 T_p G_t = 0 up to m <= 9600: true
+step1 sturm t=203 T_p G_t = 0 up to m <= 9792: true
+sparse tau=1: 25 values of e mod p, reduced failures 0, full checks 0
+step2 sparse tau=1 K0=13 Mmin=45 failures(e,w)=0 [] [0.0 s]
+sparse tau=3: 25 values of e mod p, reduced failures 0, full checks 0
+step2 sparse tau=3 K0=12 Mmin=89 failures(e,w)=0 [] [0.1 s]
+step3 level 19: [4.2 s] nodes 262144, closed 261932, lemma2 3, sparse 192, split 17 [12289, 2051, 11, 13, 15, 17, 19, 21, 23, 51, 55, 59, 61, 65, 69, 199, 203]
+step3 level 20: [4.5 s] nodes 34, closed 19, lemma2 13, sparse 0, split 2 [199, 203]
+step3 level 21: [4.6 s] nodes 4, closed 2, lemma2 0, sparse 0, split 2 [199, 203]
+step3 level 22: [4.9 s] nodes 4, closed 2, lemma2 2, sparse 0, split 0 []
+lemma2 centers (t, level): [(5, 19), (7, 19), (9, 19), (11, 20), (13, 20), (15, 20), (17, 20), (19, 20), (21, 20), (23, 20), (51, 20), (55, 20), (59, 20), (61, 20), (65, 20), (69, 20), (199, 22), (203, 22)]
+VERDICT: PASS (good odd 2-adic integers = the listed ones)
+time 4.95 s, maxrss 73156 KB

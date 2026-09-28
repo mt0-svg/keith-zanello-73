@@ -1,0 +1,29 @@
+p=241 kstart=17 mu=3000 list=ker_eta_p241_b14.txt good=1,3,5,7,9,11,13,15,17,19,21,23,49,53,57,63,67,71,201
+# kztree p=241 kstart=17 maxdepth=25 kappa=482 mu=3000 good=[1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 49, 53, 57, 63, 67, 71, 201]
+step1 sturm t=5 T_p G_t = 0 up to m <= 288: true
+step1 sturm t=7 T_p G_t = 0 up to m <= 384: true
+step1 sturm t=9 T_p G_t = 0 up to m <= 480: true
+step1 sturm t=11 T_p G_t = 0 up to m <= 576: true
+step1 sturm t=13 T_p G_t = 0 up to m <= 672: true
+step1 sturm t=15 T_p G_t = 0 up to m <= 768: true
+step1 sturm t=17 T_p G_t = 0 up to m <= 864: true
+step1 sturm t=19 T_p G_t = 0 up to m <= 960: true
+step1 sturm t=21 T_p G_t = 0 up to m <= 1056: true
+step1 sturm t=23 T_p G_t = 0 up to m <= 1152: true
+step1 sturm t=49 T_p G_t = 0 up to m <= 2400: true
+step1 sturm t=53 T_p G_t = 0 up to m <= 2592: true
+step1 sturm t=57 T_p G_t = 0 up to m <= 2784: true
+step1 sturm t=63 T_p G_t = 0 up to m <= 3072: true
+step1 sturm t=67 T_p G_t = 0 up to m <= 3264: true
+step1 sturm t=71 T_p G_t = 0 up to m <= 3456: true
+step1 sturm t=201 T_p G_t = 0 up to m <= 9696: true
+sparse tau=1: 24 values of e mod p, reduced failures 0, full checks 0
+step2 sparse tau=1 K0=13 Mmin=8 failures(e,w)=0 [] [0.0 s]
+sparse tau=3: 24 values of e mod p, reduced failures 0, full checks 0
+step2 sparse tau=3 K0=11 Mmin=29 failures(e,w)=0 [] [0.1 s]
+step3 level 17: [0.4 s] nodes 65536, closed 65437, lemma2 12, sparse 80, split 7 [4097, 12289, 57, 63, 67, 71, 201]
+step3 level 18: [0.4 s] nodes 14, closed 9, lemma2 4, sparse 0, split 1 [201]
+step3 level 19: [0.5 s] nodes 2, closed 1, lemma2 1, sparse 0, split 0 []
+lemma2 centers (t, level): [(5, 17), (7, 17), (9, 17), (11, 17), (13, 17), (15, 17), (17, 17), (19, 17), (21, 17), (23, 17), (49, 17), (53, 17), (57, 18), (63, 18), (67, 18), (71, 18), (201, 19)]
+VERDICT: PASS (good odd 2-adic integers = the listed ones)
+time 0.46 s, maxrss 34032 KB

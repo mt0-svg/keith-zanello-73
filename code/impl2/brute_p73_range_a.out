@@ -1,0 +1,6 @@
+no certificate: t = 65537 (t - 1 = 2^16 * 1, t - 3 = 2^1 * 32767)
+no certificate: t = 65539 (t - 1 = 2^1 * 32769, t - 3 = 2^16 * 1)
+no certificate: t = 131073 (t - 1 = 2^17 * 1, t - 3 = 2^1 * 65535)
+no certificate: t = 131075 (t - 1 = 2^1 * 65537, t - 3 = 2^17 * 1)
+odd t in [65536, 163840): certificate length histogram [(8192, 48528), (16384, 432), (32768, 96), (65536, 36), (131072, 32), (262144, 22), (524288, 2)]
+t without certificate up to L = 2^19 (4 values): [65537, 65539, 131073, 131075]

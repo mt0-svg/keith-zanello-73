@@ -1,0 +1,8 @@
+t = 65537 = 1 + 2^16 * 1: 161097 odd coefficients below 19726336; certificate needs L = 1703939 = 2^16 * 26.000; square-test recount of the 146 indices: OK
+t = 65539 = 3 + 2^16 * 1: 139515 odd coefficients below 19726336; certificate needs L = 1704237 = 2^16 * 26.005; square-test recount of the 146 indices: OK
+t = 131073 = 1 + 2^17 * 1: 227822 odd coefficients below 39452672; certificate needs L = 3407874 = 2^17 * 26.000; square-test recount of the 146 indices: OK
+t = 131075 = 3 + 2^17 * 1: 197301 odd coefficients below 39452672; certificate needs L = 3408026 = 2^17 * 26.001; square-test recount of the 146 indices: OK
+t = 196609 = 1 + 2^16 * 3: 139749 odd coefficients below 19726336; certificate needs L = 657216 = 2^16 * 10.028; square-test recount of the 146 indices: OK
+t = 196611 = 3 + 2^16 * 3: 121025 odd coefficients below 19726336; certificate needs L = 657846 = 2^16 * 10.038; square-test recount of the 146 indices: OK
+LEFTOVERS: PASS
+1.41 s 44220 KB

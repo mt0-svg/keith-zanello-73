@@ -1,0 +1,83 @@
+name: Release
+
+# On a tag v*: rerun every check, and only if all pass, publish the release (PDF and verification
+# archive).
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+jobs:
+  comparator:
+    uses: ./.github/workflows/comparator.yml
+
+  certificates:
+    uses: ./.github/workflows/certificates.yml
+
+  pdf:
+    uses: ./.github/workflows/paper.yml
+
+  release:
+    needs: [comparator, certificates, pdf]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: verify-*
+          merge-multiple: true
+          path: verify
+      - uses: actions/download-artifact@v4
+        with:
+          name: paper
+          path: .
+      # Expected run counts: update them when the matrices of certificates.yml change.
+      - name: Verification archive
+        run: |
+          set -eu
+          d="verification-$GITHUB_REF_NAME"
+          run="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          count() { find verify/results -name "$1*.tsv" | wc -l; }
+          [ "$(count impl1_)" -eq 30 ] && [ "$(count impl2_)" -eq 18 ] && [ "$(count gp_)" -eq 2 ] && [ "$(count comparator)" -eq 1 ] \
+            || { echo "missing runs"; ls verify/results; exit 1; }
+          if cut -f4 verify/results/*.tsv | grep -v '^PASS'; then echo "a run did not pass"; exit 1; fi
+          mkdir "$d"
+          for k in impl1 impl2 gp lean; do cp -r "verify/$k" "$d/"; done
+          n=$(cat verify/results/*.tsv | wc -l)
+          {
+            echo "# Verification of $GITHUB_REF_NAME"
+            echo
+            echo "Commit $GITHUB_SHA, $(date -u +%Y-%m-%d), workflow run $run."
+            echo
+            echo "## Versions"
+            echo
+            cat verify/versions/*.txt | sort -u | sed 's/^/    /'
+            echo
+            echo "## Runs"
+            echo
+            echo "| check | command | time | result | output |"
+            echo "|---|---|---|---|---|"
+            cat verify/results/*.tsv | sort -V | awk -F '\t' '{printf "| %s | `%s` | %s | %s | `%s` |\n", $1, $2, $3, $4, $5}'
+            echo
+            echo "LIST in a kztree command is the list on the first line of its output."
+          } > "$d/VERIFICATION.md"
+          tar -czf "$d.tar.gz" "$d"
+          cat "$d/VERIFICATION.md" >> "$GITHUB_STEP_SUMMARY"
+          echo "Verification: all $n runs passed ([workflow run]($run)); \`VERIFICATION.md\` in \`$d.tar.gz\` lists them." > summary.md
+      - name: GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -eu
+          cat "release-notes/$GITHUB_REF_NAME.md" - summary.md <<< "" > notes.md
+          files="keith-zanello-73.pdf verification-$GITHUB_REF_NAME.tar.gz"
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            gh release upload "$GITHUB_REF_NAME" $files --clobber
+            gh release edit "$GITHUB_REF_NAME" --notes-file notes.md
+          else
+            gh release create "$GITHUB_REF_NAME" $files --title "$GITHUB_REF_NAME" --notes-file notes.md
+          fi

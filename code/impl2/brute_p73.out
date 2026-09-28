@@ -1,0 +1,3 @@
+odd t < 2^16: certificate length histogram [(8192, 32352), (16384, 288), (32768, 64), (65536, 32), (131072, 4)]
+t without certificate up to L = 2^17 (28 values): [1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 51, 55, 59, 61, 65, 69, 199, 203, 8193, 8195, 16385, 16387, 32769, 32771, 49153, 49155]
+ALL-T CHECK: FAIL (differs from the list)

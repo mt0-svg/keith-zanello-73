@@ -1,0 +1,7 @@
+tau = 1: K0 = 11 (exact condition fails at K0 - 1: 1), h(X) = 2/3*X^2 - 689*X + 583/3, Mmin = 5
+tau = 3: K0 = 9 (exact condition fails at K0 - 1: 1), h(X) = 2*X^2 - 689*X, Mmin = 19
+|<2> mod p^2| = 4656, j = 9, odd w mod 2^j: 256
+tau = 1: combos checked 1191936, failures 0, min #special M per w = 22
+tau = 3: combos checked 1191936, failures 0, min #special M per w = 19
+negative control (small set {0}, w = 1): failures 4656 of 4656 (must be > 0)
+SPARSE CHECK: PASS

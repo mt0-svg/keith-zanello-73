@@ -1,0 +1,37 @@
+Part 0: T = 3073 = 1 + 2^10 * 3: oddsupp and fullcount vs dense series on N < 12000: equal (698 odd coefficients)
+Part 0: T = 2563 = 3 + 2^9 * 5: oddsupp and fullcount vs dense series on N < 12000: equal (1652 odd coefficients)
+Part 0: T = 17 = 1 + 2^4 * 1: oddsupp and fullcount vs dense series on N < 12000: equal (3825 odd coefficients)
+Part 0: T = 99 = 3 + 2^5 * 3: oddsupp and fullcount vs dense series on N < 12000: equal (2707 odd coefficients)
+Part 0: T = 57 = 1 + 2^3 * 7: oddsupp and fullcount vs dense series on N < 12000: equal (5713 odd coefficients)
+Part 0: T = 2051 = 3 + 2^11 * 1: oddsupp and fullcount vs dense series on N < 12000: equal (481 odd coefficients)
+Part 0 control: tau = 1, K = 5 (< K0): special indices with full count != c_w(M): 3844 (must be > 0)
+t = 8193 = 1 + 2^13 * 1: 56958 odd coefficients below 2465792; certificate needs L = 213005 = 2^13 * 26.002 (M up to 26); square-test recount of the 146 indices: OK; class 0: [7957, 8030]
+t = 8195 = 3 + 2^13 * 1: 49327 odd coefficients below 2465792; certificate needs L = 213084 = 2^13 * 26.011 (M up to 26); square-test recount of the 146 indices: OK; class 0: [8468, 9417]
+t = 16385 = 1 + 2^14 * 1: 80549 odd coefficients below 4931584; certificate needs L = 426517 = 2^14 * 26.033 (M up to 26); square-test recount of the 146 indices: OK; class 0: [7957, 8030]
+t = 16387 = 3 + 2^14 * 1: 69754 odd coefficients below 4931584; certificate needs L = 426450 = 2^14 * 26.028 (M up to 26); square-test recount of the 146 indices: OK; class 0: [10585, 10731]
+t = 32769 = 1 + 2^15 * 1: 113910 odd coefficients below 9863168; certificate needs L = 852446 = 2^15 * 26.015 (M up to 26); square-test recount of the 146 indices: OK; class 0: [7957, 8030]
+t = 32771 = 3 + 2^15 * 1: 98647 odd coefficients below 9863168; certificate needs L = 852014 = 2^15 * 26.001 (M up to 26); square-test recount of the 146 indices: OK; class 0: [10585, 10731]
+t = 49153 = 1 + 2^14 * 3: 69874 odd coefficients below 4931584; certificate needs L = 165767 = 2^14 * 10.118 (M up to 10); square-test recount of the 146 indices: OK; class 0: [7957, 8030]
+t = 49155 = 3 + 2^14 * 3: 60511 odd coefficients below 4931584; certificate needs L = 165494 = 2^14 * 10.101 (M up to 10); square-test recount of the 146 indices: OK; class 0: [10585, 10731]
+t = 1048577 = 1 + 2^20 * 1: 644378 odd coefficients below 315621376; certificate needs L = 27263402 = 2^20 * 26.000 (M up to 26); square-test recount of the 146 indices: OK; class 0: [7957, 8030]
+t = 4194305 = 1 + 2^22 * 1: 1288758 odd coefficients below 1262485504; certificate needs L = 109051917 = 2^22 * 26.000 (M up to 26); square-test recount of the 146 indices: OK; class 0: [7957, 8030]
+t = 1048579 = 3 + 2^20 * 1: 558051 odd coefficients below 315621376; certificate needs L = 27263043 = 2^20 * 26.000 (M up to 26); square-test recount of the 146 indices: OK; class 0: [10585, 10731]
+t = 2097155 = 3 + 2^21 * 1: 789200 odd coefficients below 631242752; certificate needs L = 54526514 = 2^21 * 26.000 (M up to 26); square-test recount of the 146 indices: OK; class 0: [10585, 10731]
+Part 3: tau = 1, w = 1: 664 values of K in [10, 3000], failures 0
+Part 3: tau = 1, w = 3: 664 values of K in [10, 3000], failures 0
+Part 3: tau = 1, w = 5: 112 values of K in [10, 3000], failures 0
+Part 3: tau = 1, w = 7: 112 values of K in [10, 3000], failures 0
+Part 3: tau = 1, w = 255: 112 values of K in [10, 3000], failures 0
+Part 3: tau = 1, w = 511: 112 values of K in [10, 3000], failures 0
+Part 3: tau = 1, w = 12345: 112 values of K in [10, 3000], failures 0
+Part 3: tau = 1, w = 1048577: 112 values of K in [10, 3000], failures 0
+Part 3: tau = 3, w = 1: 664 values of K in [9, 3000], failures 0
+Part 3: tau = 3, w = 3: 664 values of K in [9, 3000], failures 0
+Part 3: tau = 3, w = 5: 112 values of K in [9, 3000], failures 0
+Part 3: tau = 3, w = 7: 112 values of K in [9, 3000], failures 0
+Part 3: tau = 3, w = 255: 112 values of K in [9, 3000], failures 0
+Part 3: tau = 3, w = 511: 112 values of K in [9, 3000], failures 0
+Part 3: tau = 3, w = 12345: 112 values of K in [9, 3000], failures 0
+Part 3: tau = 3, w = 1048577: 112 values of K in [9, 3000], failures 0
+Part 3: 4000 combinations, failures 0, largest number of full counts used 146
+SPARSE DIRECT: PASS

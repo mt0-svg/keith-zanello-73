@@ -1,0 +1,35 @@
+p=313 kstart=17 mu=3000 list=ker_eta_p313_b14.txt good=1,3,5,7,9,11,13,15,17,19,21,23,27,33,39,45,49,53,67,71,105,117,405
+# kztree p=313 kstart=17 maxdepth=25 kappa=626 mu=3000 good=[1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 27, 33, 39, 45, 49, 53, 67, 71, 105, 117, 405]
+step1 sturm t=5 T_p G_t = 0 up to m <= 288: true
+step1 sturm t=7 T_p G_t = 0 up to m <= 384: true
+step1 sturm t=9 T_p G_t = 0 up to m <= 480: true
+step1 sturm t=11 T_p G_t = 0 up to m <= 576: true
+step1 sturm t=13 T_p G_t = 0 up to m <= 672: true
+step1 sturm t=15 T_p G_t = 0 up to m <= 768: true
+step1 sturm t=17 T_p G_t = 0 up to m <= 864: true
+step1 sturm t=19 T_p G_t = 0 up to m <= 960: true
+step1 sturm t=21 T_p G_t = 0 up to m <= 1056: true
+step1 sturm t=23 T_p G_t = 0 up to m <= 1152: true
+step1 sturm t=27 T_p G_t = 0 up to m <= 1344: true
+step1 sturm t=33 T_p G_t = 0 up to m <= 1632: true
+step1 sturm t=39 T_p G_t = 0 up to m <= 1920: true
+step1 sturm t=45 T_p G_t = 0 up to m <= 2208: true
+step1 sturm t=49 T_p G_t = 0 up to m <= 2400: true
+step1 sturm t=53 T_p G_t = 0 up to m <= 2592: true
+step1 sturm t=67 T_p G_t = 0 up to m <= 3264: true
+step1 sturm t=71 T_p G_t = 0 up to m <= 3456: true
+step1 sturm t=105 T_p G_t = 0 up to m <= 5088: true
+step1 sturm t=117 T_p G_t = 0 up to m <= 5664: true
+step1 sturm t=405 T_p G_t = 0 up to m <= 19488: true
+sparse tau=1: 156 values of e mod p, reduced failures 0, full checks 0
+step2 sparse tau=1 K0=13 Mmin=12 failures(e,w)=0 [] [0.1 s]
+sparse tau=3: 156 values of e mod p, reduced failures 0, full checks 0
+step2 sparse tau=3 K0=12 Mmin=24 failures(e,w)=0 [] [0.1 s]
+step3 level 17: [0.6 s] nodes 65536, closed 65443, lemma2 3, sparse 48, split 42 [4097, 69633, 102401, 86017, 118785, 12289, 77825, 45057, 28673, 61441, 126977, 2049, 59393, 6145, 71681, 1025, 3073, 2051, 6147, 71683, 1027, 3075, 515, 1539, 9, 11, 13, 15, 17, 19, 21, 23, 33, 39, 45, 49, 53, 67, 71, 105]
+step3 level 18: [0.6 s] nodes 84, closed 66, lemma2 13, sparse 0, split 5 [67, 71, 105, 117, 405]
+step3 level 19: [0.7 s] nodes 10, closed 5, lemma2 4, sparse 0, split 1 [405]
+step3 level 20: [0.7 s] nodes 2, closed 1, lemma2 0, sparse 0, split 1 [405]
+step3 level 21: [0.8 s] nodes 2, closed 1, lemma2 1, sparse 0, split 0 []
+lemma2 centers (t, level): [(5, 17), (7, 17), (9, 18), (11, 18), (13, 18), (15, 18), (17, 18), (19, 18), (21, 18), (23, 18), (27, 17), (33, 18), (39, 18), (45, 18), (49, 18), (53, 18), (67, 19), (71, 19), (105, 19), (117, 19), (405, 21)]
+VERDICT: PASS (good odd 2-adic integers = the listed ones)
+time 0.79 s, maxrss 49288 KB
