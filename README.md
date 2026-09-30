@@ -28,26 +28,54 @@ theorem KeithZanello.theorem1 : KeithZanello.Theorem1  -- the twenty t at p = 73
 
 ## What is checked
 
-- **Lean 4**: both theorems, with Mathlib, no `sorry`, no `native_decide`, only the axioms `propext`, `Classical.choice` and `Quot.sound`. Comparator checks them against the statements of `Challenge.lean`. The formal proof of Lemma 11 works on $`\Gamma_0(9)`$ instead of level 576 (paper, paragraph Formalization).
+- **Lean 4**: both theorems, with Mathlib, no `sorry`, no `native_decide`, only the axioms `propext`, `Classical.choice` and `Quot.sound`. Comparator checks them against the statements of `KZ73/Challenge.lean`. The formal proof of Lemma 11 works on $`\Gamma_0(9)`$ instead of level 576 (paper, paragraph Formalization).
 - **Computation**: Theorems 2 and 3 of the paper, at the other primes $`p \equiv 1 \pmod{24}`$ below 2000. For each prime, the Rust program `kztree` writes a certificate, a list of checks that `paper/check.sh` reruns. To guard against a bug in `kztree`, a second program written separately in SageMath and PARI/GP redoes part of this work. At $`p = 73`$ and $`193`$ it recomputes the whole certificate and agrees at every step; at $`p = 97`$ it builds its own certificate, with other parameters, for the same set of exponents $`t`$; at $`p = 337`$ and $`1033`$ it redoes every step except the final search over the residues of $`t`$ modulo powers of 2, which takes most of the running time. At the other 25 primes the certificate was checked by `kztree` alone.
 
-CI runs Comparator and `lake build` at each push, and reruns the computations at each push that touches `code/` or `paper/`, except three checks of the second implementation that take over 10 minutes each (see `code/impl2/README.md`). A tag publishes a release only if every CI check passes, with the PDF and the complete output of every CI run.
+CI runs Comparator and `lake build` at each push, and reruns the computations at each push that touches `code/` or `paper/`, except three checks of the second implementation that take over 10 minutes each (see `code/impl2/README.md`). A tag builds the package from source, runs Comparator on that build and reruns the computations; only if every check passes does it publish the release, with the PDF, the complete output of every CI run and the Lake build archive of the build that Comparator checked.
 
 ## Layout
 
 | Path | Content |
 |---|---|
 | `KZ73/` | the Lean proof (Lean and Mathlib `v4.34.1`); the paper names the Lean counterpart of each numbered statement, or says it is not formalized |
-| `Challenge.lean`, `Solution.lean`, `config.json` | the statements and the Comparator configuration |
+| `KZ73/Challenge.lean`, `KZ73/Solution.lean`, `config.json` | the statements and the Comparator configuration |
 | `paper/` | the TeX source, `check.sh` and `small_checks.gp` |
 | `code/impl1/` | `kztree` and its recorded certificates at the thirty primes |
 | `code/impl2/` | the second implementation, with a README mapping each check to its script and output |
 | `code/gp/` | PARI/GP checks: Proposition 4, the level 9 forms of the formalization, the character of $`\eta^8`$, a cross-check of the bad exponents, and a search tool for candidate exponents |
 
-Build and check:
+## Check and reuse
+
+Fast check, in a clone at the tag, with the build of the release:
 
 ```sh
-lake exe cache get && lake build
+lake exe cache get          # Mathlib, from its cache
+lake build :release         # this package, from the release archive: 3 s
+lake build --no-build       # nothing left to build: 4 s
+rm -f .lake/build/lib/lean/KZ73/Challenge.* .lake/build/ir/KZ73/Challenge.*
+# then Comparator, as .github/workflows/comparator.yml runs it: 4 minutes
+```
+
+Comparator trusts the challenge module, which holds the statements: the `rm` line has it compiled again from its source in Comparator's sandbox, and the Lean kernel checks again everything the two theorems use.
+
+Full check, from source: `lake exe cache get && lake build` (the build: 145 s), then Comparator as above.
+
+As a dependency, in a package on Lean `v4.34.1` (`leanprover/lean4:v4.34.1` in `lean-toolchain`) that requires Mathlib at `rev = "v4.34.1"`:
+
+```toml
+[[require]]
+name = "keith-zanello-73"
+git = "https://github.com/mt0-svg/keith-zanello-73"
+rev = "v1.2"
+```
+
+then `lake update keith-zanello-73`, `lake exe cache get` and `lake build`, which downloads the build archive of the release instead of compiling this package (11 s for a module that imports `KZ73.Solution` and prints the axioms of the two theorems). On a platform other than Linux x86_64, or on another toolchain or Mathlib revision, Lake compiles the package.
+
+These times were measured on a Linux x86_64 workstation limited to 4 cores, with Mathlib's build already on disk and the release archive read from the local disk; a download from GitHub adds its transfer time.
+
+The computations:
+
+```sh
 sh paper/check.sh 73 97 193   # three primes; all thirty: about 42 minutes with RAYON_NUM_THREADS=2
 sh code/impl2/rerun.sh NAME   # see code/impl2/README.md
 ```

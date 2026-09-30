@@ -19,7 +19,7 @@ certain eta-quotients, III: two special classes*, arXiv:2404.15716v3 (Annals of 
 the odd `t` for which `f₁^t` is `73^2`-even are exactly the twenty elements of `E73`, with the
 base `222 t mod 73^2`, unique for `t ≥ 5`.
 
-The definitions are copied from `KZ73/Statement.lean`; `Solution.lean` imports the proofs, and
+The definitions are copied from `KZ73/Statement.lean`; `KZ73/Solution.lean` imports the proofs, and
 Comparator (`config.json`) checks that they prove these two statements with the standard axioms.
 -/
 

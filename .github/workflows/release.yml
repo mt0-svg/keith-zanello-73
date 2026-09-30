@@ -1,7 +1,7 @@
 name: Release
 
-# On a tag v*: rerun every check, and only if all pass, publish the release (PDF and verification
-# archive).
+# On a tag v*: build the package from source, run Comparator on that build and rerun the other checks; only if
+# all pass, publish the release (PDF, verification archive and the Lake build archive of that build).
 on:
   push:
     tags: ["v*"]
@@ -10,8 +10,47 @@ permissions:
   contents: read
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Set up Lean and fetch the Mathlib cache
+        uses: leanprover/lean-action@v1
+        with:
+          auto-config: false
+          use-mathlib-cache: true
+          use-github-cache: false
+      - name: Build from source
+        shell: bash
+        run: |
+          set -u
+          mkdir -p verify/lean verify/results
+          s=$(date +%s)
+          rc=0
+          { echo '$ lake build'; lake build && { echo; echo '$ lake build --no-build'; lake build --no-build; }; } > build.txt 2>&1 || rc=$?
+          cat build.txt
+          cp build.txt verify/lean/build.txt
+          if [ "$rc" -eq 0 ]; then r=PASS; else r=FAIL; fi
+          printf 'build\tlake build, then lake build --no-build\t%s s\t%s\tlean/build.txt\n' $(($(date +%s) - s)) "$r" > verify/results/build.tsv
+          [ "$r" = PASS ]
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lake-build
+          path: .lake/build
+          include-hidden-files: true
+          compression-level: 1
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: verify-build
+          path: verify/
+
   comparator:
+    needs: build
     uses: ./.github/workflows/comparator.yml
+    with:
+      lake-build: true
 
   certificates:
     uses: ./.github/workflows/certificates.yml
@@ -20,7 +59,7 @@ jobs:
     uses: ./.github/workflows/paper.yml
 
   release:
-    needs: [comparator, certificates, pdf]
+    needs: [build, comparator, certificates, pdf]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -35,6 +74,19 @@ jobs:
         with:
           name: paper
           path: .
+      - uses: actions/download-artifact@v4
+        with:
+          name: lake-build
+          path: .lake/build
+      # The archive Lake looks for: the build directory less the .setup.json files (Lake writes them again).
+      - name: Lake build archive
+        run: |
+          set -eu
+          a=keith-zanello-73-x86_64-unknown-linux-gnu.tar.gz
+          tar -czf "$a" -C .lake/build --exclude='*.setup.json' .
+          echo "ARCHIVE=$a" >> "$GITHUB_ENV"
+          echo "Lake build archive: \`$a\`, $(stat -c %s "$a") bytes." > archive.md
+          cat archive.md
       # Expected run counts: update them when the matrices of certificates.yml change.
       - name: Verification archive
         run: |
@@ -43,6 +95,7 @@ jobs:
           run="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
           count() { find verify/results -name "$1*.tsv" | wc -l; }
           [ "$(count impl1_)" -eq 30 ] && [ "$(count impl2_)" -eq 18 ] && [ "$(count gp_)" -eq 2 ] && [ "$(count comparator)" -eq 1 ] \
+            && [ "$(count build)" -eq 1 ] \
             || { echo "missing runs"; ls verify/results; exit 1; }
           if cut -f4 verify/results/*.tsv | grep -v '^PASS'; then echo "a run did not pass"; exit 1; fi
           mkdir "$d"
@@ -73,8 +126,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -eu
-          cat "release-notes/$GITHUB_REF_NAME.md" - summary.md <<< "" > notes.md
-          files="keith-zanello-73.pdf verification-$GITHUB_REF_NAME.tar.gz"
+          { cat "release-notes/$GITHUB_REF_NAME.md"; echo; cat summary.md; echo; cat archive.md; } > notes.md
+          files="keith-zanello-73.pdf verification-$GITHUB_REF_NAME.tar.gz $ARCHIVE"
           if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
             gh release upload "$GITHUB_REF_NAME" $files --clobber
             gh release edit "$GITHUB_REF_NAME" --notes-file notes.md

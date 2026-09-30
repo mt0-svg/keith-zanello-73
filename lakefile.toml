@@ -1,6 +1,11 @@
-name = "KZ73"
-version = "0.1.0"
-keywords = ["math"]
+name = "keith-zanello-73"
+version = "1.2.0"
+description = "Conjecture B of Keith and Zanello on the parity of eta powers is false: at p = 73 exactly twenty odd t have a full set of even progressions, proved in Lean 4"
+keywords = ["math", "Keith-Zanello conjecture", "eta powers", "parity", "modular forms modulo 2", "counterexample", "formal verification"]
+license = "Apache-2.0"
+licenseFiles = ["LICENSE", "NOTICE"]
+preferReleaseBuild = true
+releaseRepo = "https://github.com/mt0-svg/keith-zanello-73"
 defaultTargets = ["KZ73", "Challenge", "Solution"]
 
 [leanOptions]
@@ -19,6 +24,8 @@ name = "KZ73"
 
 [[lean_lib]]
 name = "Challenge"
+roots = ["KZ73.Challenge"]
 
 [[lean_lib]]
 name = "Solution"
+roots = ["KZ73.Solution"]

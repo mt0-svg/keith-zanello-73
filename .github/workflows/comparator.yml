@@ -6,6 +6,11 @@ on:
   pull_request:
   workflow_dispatch:
   workflow_call:
+    inputs:
+      lake-build:
+        description: check the build of the calling run (artifact lake-build) instead of a build in the sandbox
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -44,6 +49,19 @@ jobs:
         with:
           auto-config: false
           use-mathlib-cache: true
+          use-github-cache: ${{ !inputs.lake-build }}
+
+      - name: The build to check (artifact lake-build)
+        if: inputs.lake-build
+        uses: actions/download-artifact@v4
+        with:
+          name: lake-build
+          path: .lake/build
+
+      # Comparator trusts the challenge module, so it is rebuilt from its source in the sandbox.
+      - name: Remove the challenge module from that build
+        if: inputs.lake-build
+        run: rm -f .lake/build/lib/lean/KZ73/Challenge.* .lake/build/ir/KZ73/Challenge.*
 
       # Comparator at this commit targets Lean v4.34.0; build it with the project's toolchain so that
       # lean4export reads the project's .olean files.
@@ -58,6 +76,7 @@ jobs:
           build: true
           build-args: lean4export comparator
           use-mathlib-cache: false
+          use-github-cache: ${{ !inputs.lake-build }}
 
       - name: Start time
         run: echo "START=$(date +%s)" >> "$GITHUB_ENV"
@@ -85,7 +104,7 @@ jobs:
           cp comparator.log verify/lean/comparator.txt || true
           lake env lean --version > verify/versions/lean.txt || true
           if [ "${{ steps.run.outcome }}" = success ]; then r=PASS; else r=FAIL; fi
-          printf 'comparator\tcomparator config.json (Challenge.lean against Solution.lean)\t%s s\t%s\tlean/comparator.txt\n' "$secs" "$r" > verify/results/comparator.tsv
+          printf 'comparator\tcomparator config.json (KZ73.Challenge against KZ73.Solution)\t%s s\t%s\tlean/comparator.txt\n' "$secs" "$r" > verify/results/comparator.tsv
 
       - uses: actions/upload-artifact@v4
         if: always()
