@@ -13,13 +13,15 @@
 
 ## The result
 
-Keith and Zanello conjectured ([Ann. Comb. 2026](https://doi.org/10.1007/s00026-026-00833-x); [arXiv:2404.15716](https://arxiv.org/abs/2404.15716), Conjecture B) that for every prime $`p`$ there are infinitely many odd $`t`$ such that, for some base $`r`$, the coefficients $`c_t(N)`$ of
+Keith and Zanello conjectured that for every prime $`p`$ there are infinitely many odd $`t`$ such that, for some base $`r`$, the coefficients of the $`t`$-th power of the product of $`1-q^n`$ over all positive $`n`$ are even on the $`p-1`$ progressions $`p^2n+kp+r`$ with $`k`$ from 1 to $`p-1`$. They proved this for every odd prime $`p`$ not congruent to 1 modulo 24. We show that at $`p=73`$ exactly twenty odd $`t`$ have this property, the largest being $`t=203`$, so the conjecture is false. The proof combines a Sturm bound with a finite certificate on the binary digits of $`t`$. The same computation gives a finite set at each of the thirty primes $`p`$ congruent to 1 modulo 24 below 2000.
+
+This is Conjecture B of Keith and Zanello ([Ann. Comb. 2026](https://doi.org/10.1007/s00026-026-00833-x); [arXiv:2404.15716](https://arxiv.org/abs/2404.15716)), stated for the coefficients of
 
 ```math
-f_1^t = \prod_{n\ge1} (1-q^n)^t = \sum_{N\ge0} c_t(N)\, q^N
+f_1^t = \prod_{n\ge1} (1-q^n)^t = \sum_{N\ge0} c_t(N)\, q^N :
 ```
 
-are even on the $`p-1`$ progressions $`N = p^2 n + kp + r`$, $`1 \le k \le p-1`$. At $`p = 73`$ exactly twenty odd $`t`$ do, the largest being $`t = 203`$.
+the $`c_t(N)`$ are even on every progression $`N = p^2 n + kp + r`$ with $`1 \le k \le p-1`$.
 
 ```lean
 theorem KeithZanello.conjectureB_false : ¬ KeithZanello.ConjectureB
