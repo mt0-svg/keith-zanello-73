@@ -9,7 +9,7 @@ Everything a reader must check against the literature is in this file.
 
 Source: W. J. Keith and F. Zanello, *Parity of the coefficients of certain eta-quotients, III:
 two special classes*, arXiv:2404.15716v3 (Annals of Combinatorics 2026), Definition 17 and
-Conjecture B, quoted in the paper `paper/main.tex` of this problem folder (Section 1).
+Conjecture B, quoted in Section 1 of the paper (`paper/main.tex`).
 
 * `f₁ = ∏_{n ≥ 1} (1 - q^n)`, an infinite product in `ℤ⟦q⟧`, and `f₁^t = ∑ c_t(n) q^n`.
 * Definition 17: `f₁^t` is `(p, r)`-even, for a base `r ∈ {0, …, p^2 - 1}`, if

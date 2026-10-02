@@ -3,5 +3,6 @@
   "solution_module": "KZ73.Solution",
   "theorem_names": ["KeithZanello.conjectureB_false", "KeithZanello.theorem1"],
   "permitted_axioms": ["propext", "Quot.sound", "Classical.choice"],
-  "enable_nanoda": false
+  "enable_nanoda": true,
+  "lean_kernel": false
 }

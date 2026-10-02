@@ -7,7 +7,7 @@
 # KZ_SAVE=dir (an absolute path) also writes the complete output of each rerun, after the header line of the recorded
 # file, to dir/impl1/tree_p<p>.txt, and a tab-separated result line (check, command, time, result, file) to
 # dir/results/impl1_p<p>.tsv; LIST in the command is the list on the header line.
-# Rerunning all 30 primes takes about 42 minutes on two threads (RAYON_NUM_THREADS=2).
+# Rerunning all 30 primes takes about 41 minutes on two threads (RAYON_NUM_THREADS=2).
 set -eu
 HERE=$(cd "$(dirname "$0")" && pwd)
 CODE="$HERE/../code/impl1"

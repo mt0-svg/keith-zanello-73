@@ -29,8 +29,8 @@ namespace KeithZanello
 
 /-- Euler's product `f₁ = ∏_{n ≥ 1} (1 - q^n)` in `ℤ⟦q⟧`, as the infinite product
 `∏' n : ℕ, (1 - X^(n+1))` for the coefficientwise topology on `ℤ⟦X⟧` (`ℤ` discrete).
-The product converges (`f₁_hasProd` below), and `c_eq_coeff_finite_prod` shows that
-`c t n` is the coefficient of `q^n` in the `t`-th power of the finite product
+The product converges (`f₁_hasProd` in `KZ73/Statement.lean`), and `c_eq_coeff_finite_prod`
+there shows that `c t n` is the coefficient of `q^n` in the `t`-th power of the finite product
 `∏_{k=1}^{n} (1 - q^k)`. -/
 noncomputable def f₁ : ℤ⟦X⟧ := ∏' n : ℕ, (1 - X ^ (n + 1))
 

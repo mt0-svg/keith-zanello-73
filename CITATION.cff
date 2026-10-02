@@ -6,7 +6,8 @@ authors:
   - name: mt0-svg
 repository-code: "https://github.com/mt0-svg/keith-zanello-73"
 license: Apache-2.0
-version: v1.2
+version: v1.3.0
+date-released: 2026-10-02
 doi: 10.5281/zenodo.23014000
 keywords:
   - Keith-Zanello conjecture

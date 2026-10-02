@@ -1,0 +1,19 @@
+# Comparator on KeithZanello.conjectureB_false and KeithZanello.theorem1 (config.json: nanoda alone, lean_kernel false),
+# from the root of the repository after lake build, with the outputs of KZ73.Challenge deleted first (as the job comparator
+# of .github/workflows/ci.yml does), in a systemd service limited to 4 CPUs and 12 GB, without swap. Tools: Comparator
+# d03acab with .github/comparator-lean-kernel.patch, built with Lean v4.34.1; lean4export
+# 076e8e5; landrun 811cfff; nanoda_bin 3a24072. Machine: AMD Ryzen 9 5900X, 2026-10-01. Two runs: 78 s and 75 s.
+Building KZ73.Challenge
+⚠ [1662/1662] Built KZ73.Challenge (1.4s)
+warning: KZ73/Challenge.lean:69:8: declaration uses `sorry`
+warning: KZ73/Challenge.lean:72:8: declaration uses `sorry`
+Build completed successfully (1662 jobs).
+Exporting #[Quot, Quot.mk, Quot.lift, Quot.ind, KeithZanello.conjectureB_false, KeithZanello.theorem1, propext, Quot.sound, Classical.choice, Nat.add, Nat.sub, Nat.mul, Nat.pow, Nat.gcd, Nat.div, Nat.mod, Nat.beq, Nat.ble, Nat.land, Nat.lor, Nat.xor, Nat.shiftLeft, Nat.shiftRight, String.ofList, Char.ofNat, List, eagerReduce, Nat, String, String.mk, Char, optParam, autoParam, semiOutParam, outParam] from KZ73.Challenge
+Building KZ73.Solution
+Build completed successfully (3528 jobs).
+Exporting #[Quot, Quot.mk, Quot.lift, Quot.ind, KeithZanello.conjectureB_false, KeithZanello.theorem1, propext, Quot.sound, Classical.choice, Nat.add, Nat.sub, Nat.mul, Nat.pow, Nat.gcd, Nat.div, Nat.mod, Nat.beq, Nat.ble, Nat.land, Nat.lor, Nat.xor, Nat.shiftLeft, Nat.shiftRight, String.ofList, Char.ofNat, List, eagerReduce, Nat, String, String.mk, Char, optParam, autoParam, semiOutParam, outParam] from KZ73.Solution
+Running nanoda kernel on solution
+nanoda kernel accepts the solution
+Your solution is okay!
+memory.peak 3391557632
+COMPARATOR PASS (nanoda): 78 s wall, memory peak 3234 MiB

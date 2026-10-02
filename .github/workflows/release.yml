@@ -1,72 +1,92 @@
 name: Release
 
-# On a tag v*: build the package from source, run Comparator on that build and rerun the other checks; only if
-# all pass, publish the release (PDF, verification archive and the Lake build archive of that build).
+# On a tag v* (or by hand for a given tag): publishes the release of the tag from the green CI run started by hand on
+# the tagged commit. Nothing is compiled again but the PDF: the Lake build that CI built and checked (#print axioms,
+# the source scan, Comparator) is packed as it is, with the PDF and the outputs of every check of that run.
 on:
   push:
     tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Tag to release
+        required: true
 
 permissions:
   contents: read
 
+env:
+  TAG: ${{ inputs.tag || github.ref_name }}
+
 jobs:
-  build:
+  ci-run:
+    name: Green CI run of the tagged commit
     runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+    outputs:
+      run: ${{ steps.find.outputs.run }}
+      sha: ${{ steps.find.outputs.sha }}
     steps:
       - uses: actions/checkout@v5
-      - name: Set up Lean and fetch the Mathlib cache
-        uses: leanprover/lean-action@v1
         with:
-          auto-config: false
-          use-mathlib-cache: true
-          use-github-cache: false
-      - name: Build from source
+          fetch-depth: 0
+      # The green CI run started by hand on the tagged commit: a run on a push has only the jobs of the parts that
+      # the push touched.
+      - id: find
+        env:
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
-          set -u
-          mkdir -p verify/lean verify/results
-          s=$(date +%s)
-          rc=0
-          { echo '$ lake build'; lake build && { echo; echo '$ lake build --no-build'; lake build --no-build; }; } > build.txt 2>&1 || rc=$?
-          cat build.txt
-          cp build.txt verify/lean/build.txt
-          if [ "$rc" -eq 0 ]; then r=PASS; else r=FAIL; fi
-          printf 'build\tlake build, then lake build --no-build\t%s s\t%s\tlean/build.txt\n' $(($(date +%s) - s)) "$r" > verify/results/build.tsv
-          [ "$r" = PASS ]
-      - uses: actions/upload-artifact@v4
-        with:
-          name: lake-build
-          path: .lake/build
-          include-hidden-files: true
-          compression-level: 1
-          retention-days: 7
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: verify-build
-          path: verify/
-
-  comparator:
-    needs: build
-    uses: ./.github/workflows/comparator.yml
-    with:
-      lake-build: true
-
-  certificates:
-    uses: ./.github/workflows/certificates.yml
+          set -eu
+          sha=$(git rev-parse "$TAG^{commit}")
+          run=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/ci.yml/runs?status=success&event=workflow_dispatch&head_sha=$sha&per_page=100" \
+            --jq '.workflow_runs[0].id // empty')
+          [ -n "$run" ] || { echo "no successful CI run started by hand on $TAG ($sha): run ci.yml on it (gh workflow run ci.yml --ref $TAG), then this workflow by hand"; exit 1; }
+          echo "CI run $run on $TAG ($sha)"
+          # Every job of that run but Badges must have run and passed: a job skipped by its if, or a step skipped
+          # inside a job, would leave results missing, and counts of result files kept here drift from ci.yml. The
+          # one exception: the continuation parts of a chained Lean build (part 2 on) are skipped by design once an
+          # earlier part ends the build, so they may be skipped, provided part 1 and the job after the chain, which
+          # needs every part and fails on an unfinished build, passed.
+          gh api --paginate "repos/$GITHUB_REPOSITORY/actions/runs/$run/jobs?per_page=100" \
+            | jq -r '.jobs[] | select(.name != "Badges") | "\(.conclusion)\t\(.name)"' > jobs.tsv
+          cat jobs.tsv
+          [ -s jobs.tsv ] || { echo "CI run $run lists no job"; exit 1; }
+          cont='^skipped'$'\t''(Lean build|Build), part ([2-9]|[1-9][0-9]+)$'
+          if grep -vE "^success"$'\t' jobs.tsv | grep -vE "$cont"; then
+            echo "CI run $run has jobs that did not pass (above)"; exit 1
+          fi
+          if grep -qE "$cont" jobs.tsv; then
+            if ! grep -qE '^success'$'\t''(Lean build|Build), part 1$' jobs.tsv \
+              || ! grep -qE '^success'$'\t''(Lean checks|Axioms)$' jobs.tsv; then
+              echo "CI run $run: build parts skipped, but part 1 or the job after the chain did not pass"; exit 1
+            fi
+          fi
+          echo "run=$run" >> "$GITHUB_OUTPUT"
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
 
   pdf:
     uses: ./.github/workflows/paper.yml
+    with:
+      ref: ${{ inputs.tag || github.ref_name }}
 
   release:
-    needs: [build, comparator, certificates, pdf]
+    name: GitHub release
+    needs: [ci-run, pdf]
     runs-on: ubuntu-latest
     permissions:
+      actions: read
       contents: write
     steps:
       - uses: actions/checkout@v5
+        with:
+          ref: ${{ env.TAG }}
       - uses: actions/download-artifact@v4
         with:
+          run-id: ${{ needs.ci-run.outputs.run }}
+          github-token: ${{ github.token }}
           pattern: verify-*
           merge-multiple: true
           path: verify
@@ -76,6 +96,8 @@ jobs:
           path: .
       - uses: actions/download-artifact@v4
         with:
+          run-id: ${{ needs.ci-run.outputs.run }}
+          github-token: ${{ github.token }}
           name: lake-build
           path: .lake/build
       # The archive Lake looks for: the build directory less the .setup.json files (Lake writes them again).
@@ -87,24 +109,24 @@ jobs:
           echo "ARCHIVE=$a" >> "$GITHUB_ENV"
           echo "Lake build archive: \`$a\`, $(stat -c %s "$a") bytes." > archive.md
           cat archive.md
-      # Expected run counts: update them when the matrices of certificates.yml change.
+      # Expected runs: the files that steps of ci.yml write unconditionally (the computation jobs are covered by the
+      # job check of ci-run: every job of the run passed).
       - name: Verification archive
         run: |
           set -eu
-          d="verification-$GITHUB_REF_NAME"
-          run="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
-          count() { find verify/results -name "$1*.tsv" | wc -l; }
-          [ "$(count impl1_)" -eq 30 ] && [ "$(count impl2_)" -eq 18 ] && [ "$(count gp_)" -eq 2 ] && [ "$(count comparator)" -eq 1 ] \
-            && [ "$(count build)" -eq 1 ] \
-            || { echo "missing runs"; ls verify/results; exit 1; }
+          d="verification-$TAG"
+          run="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/${{ needs.ci-run.outputs.run }}"
+          for k in source-scan build axioms comparator gp_small_checks gp_t5_check paper_statement-map; do
+            [ -f "verify/results/$k.tsv" ] || { echo "missing run: $k"; ls verify/results; exit 1; }
+          done
           if cut -f4 verify/results/*.tsv | grep -v '^PASS'; then echo "a run did not pass"; exit 1; fi
           mkdir "$d"
-          for k in impl1 impl2 gp lean; do cp -r "verify/$k" "$d/"; done
+          for k in impl1 impl2 gp lean paper; do cp -r "verify/$k" "$d/"; done
           n=$(cat verify/results/*.tsv | wc -l)
           {
-            echo "# Verification of $GITHUB_REF_NAME"
+            echo "# Verification of $TAG"
             echo
-            echo "Commit $GITHUB_SHA, $(date -u +%Y-%m-%d), workflow run $run."
+            echo "Commit ${{ needs.ci-run.outputs.sha }}, $(date -u +%Y-%m-%d), CI run $run."
             echo
             echo "## Versions"
             echo
@@ -126,11 +148,11 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -eu
-          { cat "release-notes/$GITHUB_REF_NAME.md"; echo; cat summary.md; echo; cat archive.md; } > notes.md
-          files="keith-zanello-73.pdf verification-$GITHUB_REF_NAME.tar.gz $ARCHIVE"
-          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
-            gh release upload "$GITHUB_REF_NAME" $files --clobber
-            gh release edit "$GITHUB_REF_NAME" --notes-file notes.md
+          { cat "release-notes/$TAG.md"; echo; cat summary.md; echo; cat archive.md; } > notes.md
+          files="keith-zanello-73.pdf verification-$TAG.tar.gz $ARCHIVE"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" $files --clobber
+            gh release edit "$TAG" --notes-file notes.md
           else
-            gh release create "$GITHUB_REF_NAME" $files --title "$GITHUB_REF_NAME" --notes-file notes.md
+            gh release create "$TAG" $files --title "$TAG" --notes-file notes.md
           fi

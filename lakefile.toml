@@ -1,5 +1,5 @@
 name = "keith-zanello-73"
-version = "1.2.0"
+version = "1.3.0"
 description = "Conjecture B of Keith and Zanello on the parity of eta powers is false: at p = 73 exactly twenty odd t have a full set of even progressions, proved in Lean 4"
 keywords = ["math", "Keith-Zanello conjecture", "eta powers", "parity", "modular forms modulo 2", "counterexample", "formal verification"]
 license = "Apache-2.0"

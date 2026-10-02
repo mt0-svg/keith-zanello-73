@@ -99,7 +99,7 @@ The recorded outputs come from SageMath 10.9 (with its PARI 2.17.3) and PARI/GP 
 
 ## Continuous integration
 
-The job `impl2` of `.github/workflows/certificates.yml` runs `rerun.sh` in the container `sagemath/sagemath:10.9` on every check above except three, which take more than 10 minutes here and so may exceed 20 minutes on a 4-core GitHub runner:
+The job `impl2` of `.github/workflows/ci.yml` runs `rerun.sh` in the container `sagemath/sagemath:10.9` on every check above except three, which take more than 10 minutes here and so may exceed 20 minutes on a 4-core GitHub runner:
 
 | left out | time here |
 |---|---|

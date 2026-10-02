@@ -7,8 +7,8 @@ For each odd `w < 4096`, the set `R(w)` of residues modulo 73 of the `M ∈ [M_m
 `c_w(M)` odd is computed as a 73-bit mask. Condition (S) for `(e, ρ)` asks for a double class `c`
 with `e M + c ≡ ρ`, that is `M ≡ e⁻¹ (ρ - c) (mod 73)` for some `M ∈ R(w)`. When `R(w)` is
 everything this holds for any double class; otherwise the double classes are searched.
-The double classes come with explicit witness pairs, computed by `scratch/double_classes.gp`
-and checked here.
+Each double class comes with an explicit witness pair of indices, which `dbl1_ok` and `dbl3_ok`
+check here.
 -/
 
 open PowerSeries
